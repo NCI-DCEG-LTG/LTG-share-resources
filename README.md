@@ -1,4 +1,4 @@
-# LTG-labs-hub
+# LTG-lab-resource
 
 ### Goal: 
 Shared resources and code repository for DCEG LTG research labs
