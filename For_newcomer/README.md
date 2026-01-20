@@ -17,5 +17,5 @@ O'Neil Eamonn: eamonn.o'neil@nih.gov
 - The LTG book contains relevant information about CRL, NIH onboarding, trainee and fellows’ resources, and centralized lab information.
 - The pdf is located in L-drive: `LTG/LTG Handbook/LTG Handbook April 2022.pdf`. In that folder alos contains useful resoucres.
 
-### Peope expert
+### Points of Contact
 - The file `xxx` contains people who can be approached for certain questions.
