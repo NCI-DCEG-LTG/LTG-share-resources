@@ -25,3 +25,7 @@
 ## Reference Genomes
 - [GENCODE](https://www.gencodegenes.org/) - Human and mouse gene annotations
 - [RefSeq](https://www.ncbi.nlm.nih.gov/refseq/) - NCBI Reference Sequence Database
+
+## Learning
+
+- [NIH library tools](https://www.nihlibrary.nih.gov/resources/subject-guides/statistical-resources/tools) - NIH Library provides high-performance workstations loaded with a variety of statistical tools.
