@@ -4,6 +4,10 @@ This folder contains shared code, scripts, and analysis pipelines that all DCEG 
 
 ## Available Resources
 
+### NIH library trainings record video
+- **[video link](https://www.nihlibrary.nih.gov/training/recordings)** - provide various traning lessons records, very good for learning new technique.
+
+
 ### RNA-seq Analysis
 - **[RNA-seq_related/](./RNA-seq_related/)** - RNA sequencing analysis scripts and workflows
 
