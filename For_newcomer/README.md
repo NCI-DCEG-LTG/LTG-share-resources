@@ -13,19 +13,24 @@
 
 
 
-### Things to set up
+### Things to set up and where to find help
 
 - Biowulf setup: https://hpc.nih.gov/docs/accounts.html
 
 - For CCAD2 and T/L-drive access and setup, please contact
-
-- IT help: 
   
 ```
 Nathan Cole: nathan.cole@nih.gov
 or
 O'Neil Eamonn: eamonn.o'neil@nih.gov
 ```
+
+- NCI IT help website:
+- https://service.cancer.gov/ncisp?id=nci_home
+
+All kinds of IT support like how to set up printer, how to install software and lincese, etc.
+
+  
 
 ### LTG handbook location
 
