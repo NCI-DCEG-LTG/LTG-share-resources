@@ -2,7 +2,6 @@
 
 ### Our LTG main page and PI information
 
-- **[LTG main page](https://dceg.cancer.gov/about/organization/tdrp/ltg)**
 
 - **PIs**
   - [Ludmila Prokunina-Olsson](https://dceg.cancer.gov/about/organization/tdrp/ltg/prokunina-olsson-laboratory)
