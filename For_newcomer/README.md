@@ -43,7 +43,7 @@
 | **Biowulf** | Large-scale HPC jobs, parallel computing, genomics pipelines (e.g., GATK, PLINK), long-running batch jobs | [Request account](https://hpc.nih.gov/docs/accounts.html) |
 | **CCAD2** | NCI-specific computing, lab-shared workflows | Contact Nathan Cole or Eamonn O'Neil (see above) |
 | **L-Drive / T-Drive** | Shared lab file storage, documents, reference data | Contact Nathan Cole or Eamonn O'Neil (see above) |
-| **Local Machine** | Light tasks, writing scripts, testing code, small analyses | Set up via NCI IT |
+| **Local Machine** | Light tasks, writing scripts, testing code, small analyses | Your personal laptop |
 
 #### Quick Tips
 - **Biowulf** is the go-to for computationally intensive work. Jobs are submitted via SLURM. See the [Biowulf user guide](https://hpc.nih.gov/docs/userguide.html) to get started.
