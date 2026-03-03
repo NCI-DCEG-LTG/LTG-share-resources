@@ -1,31 +1,67 @@
-### LTG Lab Resources
+# LTG Lab Resources
 
-The **LTG Share Resources** repository includes:
+The **LTG Share Resources** repository is a centralized hub for tools, documentation, and datasets used by the Laboratory of Translational Genomics (LTG) within the Division of Cancer Epidemiology and Genetics (DCEG). This repository supports onboarding, collaboration, reproducible research, and knowledge sharing across projects.
+
+## 📦 Repository Contents
 
 - **[For Newcomers](https://github.com/NCI-DCEG-LTG/LTG-share-resources/tree/main/For_newcomer)**  
-  Onboarding information, lab policies, computing access, and key contacts.
+  Onboarding information for new lab members, including policies, computing access setup, data storage guidelines, and key contacts.
 
 - **[Shared Resources](https://github.com/NCI-DCEG-LTG/LTG-share-resources/tree/main/Shared_Resources)**  
-  Useful scripts, analysis templates, SOPs, and class materials.
+  A collection of useful analysis scripts, templates, SOPs, class materials, and shared documentation.
 
 - **[Useful Links](https://github.com/NCI-DCEG-LTG/LTG-share-resources/tree/main/useful_links)**  
-  Frequently used public tools, databases, and reference resources.
+  Curated list of public tools, reference databases, and external resources frequently used in LTG analyses.
 
 - **[GitHub Instruction Template](https://github.com/NCI-DCEG-LTG/LTG-share-resources/blob/main/Github-Instruction_template.md)**  
-  Tutorials on GitHub usage, Markdown formatting, and documentation standards.
+  Tutorials and best practices for GitHub usage, Markdown formatting, repository structure, and documentation standards.
 
 - **[Published Datasets](https://github.com/NCI-DCEG-LTG/LTG-share-resources/blob/main/Published_dataset.md)**  
-  Public datasets from LTG lab publications, including access links and accession numbers.
+  A table of publicly available datasets from LTG lab publications, including paper information and accession links.
 
 ---
 
-This repository serves as a centralized hub to support onboarding, collaboration, and reproducible research within the LTG lab.
+## 💡 Purpose
 
-### Folder and descriptions:
+This repository is intended to:
 
+- Support onboarding of new personnel
+- Promote reproducible and transparent research practices
+- Provide standardized tools, templates, and SOPs
+- Facilitate collaboration within and outside the LTG lab
 
+---
 
+## 📁 Folder Overview
 
+> *(Optional — add a brief description of major folders here)*
 
-### Import repo to the organization
+- **`For_newcomer/`** – Getting started guides, accounts, PI expectations, FAQ  
+- **`Shared_Resources/`** – R/Python scripts, functions, pipeline templates  
+- **`useful_links/`** – Resource list (GENCODE, UCSC, ENCODE, dbGaP, etc.)  
+- **`Published_dataset.md`** – Curated dataset table from LTG publications
+
+---
+
+## 📌 How to Import This Repository to Another Organization
+
+To import this repository to a GitHub organization:
+
 https://github.com/new/import
+
+Enter this repository’s URL and follow the prompts to fork or import it into your target organization.
+
+---
+
+## 🧭 Contribution Guidelines
+
+If you are contributing content to this repository, please:
+
+- Follow Markdown and documentation standards
+- Include clear descriptions and comments in scripts
+- Keep links and resources up to date
+- Avoid storing sensitive or unpublished data in this public repo
+
+---
+
+*Maintained by the LTG Lab Administration*
