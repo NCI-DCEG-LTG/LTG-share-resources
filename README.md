@@ -1,4 +1,4 @@
-# LTG Lab Resources
+# Shared Resources
 
 The **LTG Share Resources** repository is a centralized hub for tools, documentation, and datasets used by the Laboratory of Translational Genomics (LTG) within the Division of Cancer Epidemiology and Genetics (DCEG). This repository supports onboarding, collaboration, reproducible research, and knowledge sharing across projects.
 
