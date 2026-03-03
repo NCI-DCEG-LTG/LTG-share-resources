@@ -21,38 +21,6 @@ The **LTG Share Resources** repository is a centralized hub for tools, documenta
 
 ---
 
-## 💡 Purpose
-
-This repository is intended to:
-
-- Support onboarding of new personnel
-- Promote reproducible and transparent research practices
-- Provide standardized tools, templates, and SOPs
-- Facilitate collaboration within and outside the LTG lab
-
----
-
-## 📁 Folder Overview
-
-> *(Optional — add a brief description of major folders here)*
-
-- **`For_newcomer/`** – Getting started guides, accounts, PI expectations, FAQ  
-- **`Shared_Resources/`** – R/Python scripts, functions, pipeline templates  
-- **`useful_links/`** – Resource list (GENCODE, UCSC, ENCODE, dbGaP, etc.)  
-- **`Published_dataset.md`** – Curated dataset table from LTG publications
-
----
-
-## 📌 How to Import This Repository to Another Organization
-
-To import this repository to a GitHub organization:
-
-https://github.com/new/import
-
-Enter this repository’s URL and follow the prompts to fork or import it into your target organization.
-
----
-
 ## 🧭 Contribution Guidelines
 
 If you are contributing content to this repository, please:
@@ -62,6 +30,3 @@ If you are contributing content to this repository, please:
 - Keep links and resources up to date
 - Avoid storing sensitive or unpublished data in this public repo
 
----
-
-*Maintained by the LTG Lab Administration*
