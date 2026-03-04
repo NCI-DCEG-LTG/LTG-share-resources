@@ -14,7 +14,7 @@ The **LTG Share Resources** repository is a centralized hub for tools, documenta
   Curated list of public tools, reference databases, and external resources frequently used in LTG analyses.
 
 - **[GitHub Instruction Template](https://github.com/NCI-DCEG-LTG/LTG-share-resources/blob/main/Github-Instruction_template.md)**  
-  Tutorials and best practices for GitHub usage, Markdown formatting, repository structure, and documentation standards.
+  Tutorials and best practices for GitHub usage, Markdown formatting.
 
 - **[Published Datasets](https://github.com/NCI-DCEG-LTG/LTG-share-resources/blob/main/Published_dataset.md)**  
   A table of publicly available datasets from LTG lab publications, including paper information and accession links.
