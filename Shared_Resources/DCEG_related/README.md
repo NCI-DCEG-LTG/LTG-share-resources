@@ -17,7 +17,7 @@
 
 ------
 
-#### DCGE course about genomic analysis and statistical workshop:
+### DCGE workshops:
 
 [DCEG Github workshop](https://dceg-workshops.github.io/fair_principles_for_data_stewardship/workshops/workshop_2)
 
