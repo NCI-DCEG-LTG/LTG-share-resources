@@ -4,8 +4,8 @@ This folder contains shared code, scripts, and analysis pipelines that all DCEG 
 
 ## Available Resources
 
-### DCEG workshops
-- **[DCEG_workshops/](./DCEG_workshops/)** - video records/links of workshops hosted by DCEG
+### DCEG related
+- **[DCEG_related/](./DCEG_related/)** - DCEG tools and resouces
 
 ### RNA-seq Analysis
 - **[RNA-seq_related/](./RNA-seq_related/)** - RNA sequencing analysis scripts and workflows
