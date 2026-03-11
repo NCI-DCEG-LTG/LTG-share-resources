@@ -14,8 +14,7 @@
 
 #### DCGE course about genomic analysis and statistical workshop:
 
-[DCEG Github workshop<img width="259" height="42" alt="image" src="https://github.com/user-attachments/assets/e06efac4-466e-4ae7-ba85-d50ba669fe67" />
-](https://dceg-workshops.github.io/fair_principles_for_data_stewardship/workshops/workshop_2)
+[DCEG Github workshop](https://dceg-workshops.github.io/fair_principles_for_data_stewardship/workshops/workshop_2)
 
 - Introduction to GitHub Workshop
 
