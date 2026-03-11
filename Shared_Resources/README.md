@@ -13,9 +13,6 @@ This folder contains shared code, scripts, and analysis pipelines that all DCEG 
 ### GWAS related information
 - **[GWAS realted](./GWAS_related/)** - Some GWAS analysis notes and information
 
-### SRA-blast
-- [SRA-BLAST](./SRA_blast_tutorial.pdf) - A tool in SRA dataset that can easy to find reads coverage and genorype without downloading the whole files.
-
 ### GEO submission
 
 - [GEO-submit](./GEO_submission_steps.md) - A steps for how to upload raw and processed files to the GEO (Gene Expression Omnibus)
