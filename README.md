@@ -10,7 +10,7 @@ The **LTG Share Resources** repository is a centralized hub for tools, documenta
 - **[Shared Resources](https://github.com/NCI-DCEG-LTG/LTG-share-resources/tree/main/Shared_Resources)**  
   A collection of useful analysis scripts, templates, SOPs, class materials, and shared documentation.
 
-- **[Useful Links](https://github.com/NCI-DCEG-LTG/LTG-share-resources/tree/main/useful_links)**  
+- **[Public external_resources](https://github.com/NCI-DCEG-LTG/LTG-share-resources/tree/main/Public_external_resources)**  
   Curated list of public tools, reference databases, and external resources frequently used in LTG analyses.
 
 - **[GitHub Instruction Template](https://github.com/NCI-DCEG-LTG/LTG-share-resources/blob/main/Github-Instruction_template.md)**  
