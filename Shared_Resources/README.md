@@ -4,14 +4,13 @@ This folder contains shared code, scripts, and analysis pipelines that all DCEG 
 
 ## Available Resources
 
-### NIH library trainings record video
-- **[video link](https://www.nihlibrary.nih.gov/training/recordings)** - provide various traning lessons records, very good for learning new technique.
-
+### DCEG workshops
+- **[DCEG_workshops/](./DCEG_workshops/)** - video records/links of workshops hosted by DCEG
 
 ### RNA-seq Analysis
 - **[RNA-seq_related/](./RNA-seq_related/)** - RNA sequencing analysis scripts and workflows
 
-### GWAS
+### GWAS related information
 - **[GWAS realted](./GWAS_related/)** - Some GWAS analysis notes and information
 
 ### SRA-blast
