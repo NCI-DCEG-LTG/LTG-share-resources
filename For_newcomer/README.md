@@ -23,7 +23,6 @@
   ```
   Nathan Cole: nathan.cole@nih.gov
   Eamonn O'Neil: eamonn.o'neil@nih.gov
-
   ```
 
 ---
