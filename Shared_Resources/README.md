@@ -1,8 +1,7 @@
-# Shared resources
+# Shared folders and documents
 
 This folder contains shared code, scripts, and analysis pipelines that all LTG labs can use and contribute to.
 
-## Available Resources
 
 ### DCEG related
 - **[DCEG_related/](./DCEG_related/)** - DCEG tools and resouces
