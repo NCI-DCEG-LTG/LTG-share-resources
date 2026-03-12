@@ -1,4 +1,4 @@
-# Shared Resources
+# Shared resources
 
 This folder contains shared code, scripts, and analysis pipelines that all LTG labs can use and contribute to.
 
