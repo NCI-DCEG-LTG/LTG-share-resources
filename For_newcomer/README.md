@@ -47,8 +47,7 @@
 #### Quick Tips
 - **Biowulf** is the go-to for computationally intensive work. Jobs are submitted via SLURM. See the [Biowulf user guide](https://hpc.nih.gov/docs/userguide.html) to get started.
 - **Do not run heavy jobs on the login node** on Biowulf — always submit via `sbatch` or use an interactive session (`sinteractive`).
-- For **storage**, keep large datasets on Biowulf `/data` or the L/T-Drive rather than your local machine.
-- When in doubt about which system to use, ask your PI or contact Nathan Cole.
+- When in doubt about which system to use, ask your PI or contact related staff.
 
 ---
 
