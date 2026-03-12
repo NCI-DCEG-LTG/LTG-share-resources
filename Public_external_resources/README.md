@@ -29,3 +29,4 @@
 ## Learning
 
 - [NIH library tools](https://www.nihlibrary.nih.gov/resources/subject-guides/statistical-resources/tools) - NIH Library provides high-performance workstations loaded with a variety of statistical tools.
+- [NIH library class records](https://www.nihlibrary.nih.gov/training/recordings) - The video records of NIH class in past 2 years.
