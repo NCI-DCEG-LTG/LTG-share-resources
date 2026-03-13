@@ -22,6 +22,9 @@
 - [Bioconductor](https://www.bioconductor.org/) - R packages for genomics
 - [GATK](https://gatk.broadinstitute.org/) - Genome Analysis Toolkit
 
+## Sequencing and cloning
+- [SnapGene](https://www.snapgene.com/resources) - SnapGene Tutorial
+
 ## Reference Genomes
 - [GENCODE](https://www.gencodegenes.org/) - Human and mouse gene annotations
 - [RefSeq](https://www.ncbi.nlm.nih.gov/refseq/) - NCBI Reference Sequence Database
