@@ -1,4 +1,4 @@
-# Folders and documents
+# Folders
 
 This folder contains shared code, scripts, and analysis pipelines that all LTG labs can use and contribute to.
 
@@ -12,11 +12,18 @@ This folder contains shared code, scripts, and analysis pipelines that all LTG l
 ### GWAS related information
 - **[GWAS realted](./GWAS_related/)** - Some GWAS analysis notes and information
 
+----------
+
+# Documents and repositories
+
 ### GEO submission
 
 - [GEO-submit](./GEO_submission_steps.md) - A steps for how to upload raw and processed files to the GEO (Gene Expression Omnibus)
 
-### How to Use
-1. Browse the folders to find relevant scripts
-2. Each subfolder contains its own README with specific instructions
-3. Feel free to contribute improvements or new tools
+### HPRC-genome-assembly-variant-analysis
+
+- [hprc-genome-assembly-variant-analysis](https://github.com/oflorez/HumanGenomeAssemblies) - Computational analysis of tandem repeats and other genomic variants in HPRC genome assemblies using multi-platform sequencing data. Special thanks to Oscar for creating and organizing this repository.
+
+
+---------
+
