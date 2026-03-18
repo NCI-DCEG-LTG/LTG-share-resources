@@ -18,12 +18,15 @@
 
 - **Biowulf (NIH HPC) Account Setup:** https://hpc.nih.gov/docs/accounts.html
 
-- **For CCAD2 and T/L-Drive access and setup, please contact:**
+- **For CCAD and T/L-Drive access and setup, please contact:**
 
   ```
   Nathan Cole: nathan.cole@nih.gov
   Eamonn O'Neil: eamonn.o'neil@nih.gov
   ```
+
+- **[CCAD User Notes](https://nih.sharepoint.com/sites/NCI-DCEG-CGRIT/SitePages/CGR-IT-Cluster_CCAD3.aspx?xsdata=MDV8MDJ8fDc2NTNiZGEzN2ZlYzRjZGU1ZjcwMDhkZTdhMGE4MTY5fDE0Yjc3NTc4OTc3MzQyZDU4NTA3MjUxY2EyZGMyYjA2fDB8MHw2MzkwODIzODI2NzI2MTczMjh8VW5rbm93bnxWR1ZoYlhOVFpXTjFjbWwwZVZObGNuWnBZMlY4ZXlKRFFTSTZJbFJsWVcxelgwRlVVRk5sY25acFkyVmZVMUJQVEU5R0lpd2lWaUk2SWpBdU1DNHdNREF3SWl3aVVDSTZJbGRwYmpNeUlpd2lRVTRpT2lKUGRHaGxjaUlzSWxkVUlqb3hNWDA9fDF8TDJOb1lYUnpMekU1T2pNd05EUmpPV1F6WmpGbU1UUXhaVE00TURSaU5HVXdORFkwTXpBd01XTTJRSFJvY21WaFpDNTJNaTl0WlhOellXZGxjeTh4TnpjeU5qUXhORFF4TkRBeHwxNTlmZjUwYWIyM2Y0NzBlNWY3MDA4ZGU3YTBhODE2OXw0NWI1ODg1YjJiMmE0ZmQ0YjI5MjE4OTAyMjJjNDlkNA%3D%3D&sdata=K3JXTU5ISnBkYk5pODlwZmRCN2UrY2pja0FEOThRbHF3MHVMOUdwa005ST0%3D&ovuser=14b77578-9773-42d5-8507-251ca2dc2b06%2Cleec20%40nih.gov&OR=Teams-HL&CT=1773860089434&clickparams=eyJBcHBOYW1lIjoiVGVhbXMtRGVza3RvcCIsIkFwcFZlcnNpb24iOiI1MC8yNjAyMTIxNTEyMyJ9)** contians a list of useful tutorial for new ccad user
+
 
 ---
 
