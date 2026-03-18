@@ -4,8 +4,8 @@ The **LTG Share Resources** repository is a centralized hub for tools, documenta
 
 ## 📦 Repository Contents
 
-- **[For Newcomers](https://github.com/NCI-DCEG-LTG/LTG-share-resources/tree/main/For_newcomer)**  
-  Onboarding information for new lab members, including policies, computing access setup, data storage guidelines, and key contacts.
+- **[For-newcomer-and-general-information](https://github.com/NCI-DCEG-LTG/LTG-share-resources/tree/main/For_newcomer)**  
+  Onboarding information for new lab members, including policies, computing access setup, data storage guidelines, and key contacts. Also contains general LTG useful information.
 
 - **[Shared Resources](https://github.com/NCI-DCEG-LTG/LTG-share-resources/tree/main/Shared_Resources)**  
   A collection of useful analysis scripts, templates, SOPs, class materials, and shared documentation.
