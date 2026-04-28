@@ -37,3 +37,9 @@
 - This course will provide researchers and analysts with a review of cutting-edge statistical methods and hands-on tutorials for analyzing large-scale genome-wide genetic data. The Google Colab notebooks are available on the GitHub Repository.
 
 
+[2026 Microbiome course](https://dceg-workshops.github.io/cancer_epi_microbiome_course/)
+
+- This short course provides an overview of the process of conducting studies of the human microbiome and cancer risk. Focus on studies of the bacterial component of the human microbiome and include discussion of the mycobiome (fungi).
+
+- The leture record [link](https://nih.sharepoint.com/sites/NCI-DCEG-myDCEG/Lists/Microbiome%20Course/AllItems.aspx?viewid=9d054ac1%2D35c3%2D4291%2Dab79%2D3ca8cfb4a99c&playlistLayout=playback&itemId=4)
+
