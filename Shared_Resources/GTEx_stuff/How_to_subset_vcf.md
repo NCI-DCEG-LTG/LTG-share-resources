@@ -8,7 +8,7 @@
 
 ml bcftools/
 
-bcftools view -r chr15:78548269-78642320 GTEx.WGS.vcf.gz -Oz -o Subset.vcf.gz
+bcftools view -r chr4:xxxx-xxxx GTEx.WGS.vcf.gz -Oz -o Subset.vcf.gz
 
 ```
 
