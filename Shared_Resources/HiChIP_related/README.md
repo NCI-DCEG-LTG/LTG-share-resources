@@ -14,3 +14,7 @@ A good collaction database of different tissue/cell line HiCHIP result.
 - The linke below is Dovetail HiChIP/WGS introduction with good analysis steps!
 https://dovetail-analysis.readthedocs.io/en/latest/index.html#
 
+
+- **Biomni skill folder**
+A zip folder `Biomni_HiCHIP_skill.zip` that can be upload to Biomni for HiChIP analysis.
+
