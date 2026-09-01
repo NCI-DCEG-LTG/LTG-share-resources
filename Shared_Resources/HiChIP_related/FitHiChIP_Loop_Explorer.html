@@ -232,7 +232,8 @@
     }
     td { padding: 9px 12px; border-bottom: 1px solid #edf1f4; font-variant-numeric: tabular-nums; white-space: nowrap; }
     tbody tr { cursor: pointer; }
-    tbody tr:hover, tbody tr.selected { background: #eef9f9; }
+    tbody tr:hover { background: #eef9f9; }
+    tbody tr.selected { background: #d9f4f2; box-shadow: inset 4px 0 0 var(--teal); }
     .pill { display: inline-block; border-radius: 999px; padding: 2px 7px; background: #e8eef3; font-size: .72rem; }
     .pill.gene { color: #9b3d29; background: var(--coral-soft); }
 
@@ -448,14 +449,14 @@
 
           <section class="card" aria-live="polite">
             <h3>Selected loop</h3>
-            <div id="detail" class="detail-empty">Click an arc or table row to see its anchors and statistics.</div>
+            <div id="detail" class="detail-empty">Click an arc or table row to see its anchors and statistics. Click it again or press Esc to clear the selection.</div>
           </section>
         </aside>
       </div>
 
       <section class="card table-card">
         <div class="panel-head">
-          <div><h2>Loops in this view</h2><p>Click a row to pin its arc. Click a column heading to sort.</p></div>
+          <div><h2>Loops in this view</h2><p>Click a row to pin its arc; click the same row again to clear it. Click a column heading to sort.</p></div>
           <button id="downloadBtn" class="small-btn ghost" type="button">Download shown TSV</button>
         </div>
         <div class="table-scroll">
@@ -499,7 +500,7 @@
         <li><strong>Compare samples.</strong> Load several files together; stacked lanes share one genomic axis. Use the sample checkboxes to isolate or combine datasets.</li>
         <li><strong>Loop color shows evidence.</strong> Soft coral (#FF7057) is stronger and blue is weaker. With an IGV export, color uses its column-8 −log10(q) score because exact q-values are no longer stored.</li>
         <li><strong>Dashed arcs are clipped.</strong> One anchor is visible and the other lies beyond the current window; zoom out or use “Fit gene contacts” to reveal both.</li>
-        <li><strong>Click an arc or row.</strong> The selected loop receives a dark outline and its sample, anchors, and available statistics appear at right.</li>
+        <li><strong>Click an arc or row.</strong> The selected loop receives a dark outline and its sample, anchors, and available statistics appear at right. Click it again, click a blank area, use “Clear selection,” or press Esc to remove the highlight.</li>
         <li><strong>Add ChIP-seq or ATAC-seq context if available.</strong> Local narrowPeak and broadPeak files appear as peak blocks; local BigWig files appear as continuous signal with numeric values on the right. Each BigWig lane autoscales separately, so compare values only when the files use comparable units and normalization.</li>
         <li><strong>The gene track</strong> is fetched from UCSC NCBI RefSeq for the visible region. A selected gene is highlighted.</li>
         <li><strong>Be careful with interpretation.</strong> An overlapping loop is a candidate regulatory contact; confirming enhancer–gene function needs additional evidence.</li>
@@ -1269,12 +1270,12 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
           d: d, class: "arc", fill: "none", stroke: color,
           "stroke-width": width, opacity: selected ? 1 : (.48 + normalized * .44),
           "stroke-linecap": "round", "stroke-dasharray": clipped ? "8 5" : "none",
-          tabindex: 0, role: "button",
+          tabindex: 0, role: "button", "data-id": loop.id, "aria-pressed": selected ? "true" : "false",
           "aria-label": loop.sample + " loop " + loop.id + " from " + locus(loop.chr1, loop.start1, loop.end1) + " to " + locus(loop.chr2, loop.start2, loop.end2)
         });
         path.appendChild(svgEl("title", {}, loop.sample + " · Loop " + loop.id + "\n" + locus(loop.chr1, loop.start1, loop.end1) + "\n" + locus(loop.chr2, loop.start2, loop.end2) + "\n−log10(q): " + fmtScore(loop) + (clipped ? "\nDashed: one anchor is outside the current window" : "")));
-        path.addEventListener("click", function () { selectLoop(loop.id); });
-        path.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectLoop(loop.id); } });
+        path.addEventListener("click", function (e) { e.stopPropagation(); selectLoop(loop.id, "plot"); });
+        path.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectLoop(loop.id, "plot"); } });
         svg.appendChild(path);
         [[loop.start1, loop.end1, x1], [loop.start2, loop.end2, x2]].forEach(function (anchor) {
           if (anchor[2] >= left && anchor[2] <= rightEdge) {
@@ -1835,7 +1836,7 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       });
       var html = rows.map(function (l) {
         var genePill = loopTouchesGene(l) ? ' <span class="pill gene">gene</span>' : "";
-        return '<tr tabindex="0" data-id="' + l.id + '" class="' + (l.id === state.selectedId ? "selected" : "") + '">' +
+        return '<tr tabindex="0" data-id="' + l.id + '" aria-selected="' + (l.id === state.selectedId ? "true" : "false") + '" class="' + (l.id === state.selectedId ? "selected" : "") + '">' +
           "<td>#" + l.id + genePill + "</td>" +
           "<td><strong>" + safeText(l.sample) + "</strong></td>" +
           "<td>" + safeText(locus(l.chr1, l.start1, l.end1)) + "</td>" +
@@ -1845,18 +1846,19 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       }).join("");
       $("loopRows").innerHTML = html || '<tr><td colspan="7" style="color:#637286;text-align:center;padding:25px">No loops to list.</td></tr>';
       Array.prototype.forEach.call($("loopRows").querySelectorAll("tr[data-id]"), function (tr) {
-        var go = function () { selectLoop(Number(tr.dataset.id)); };
-        tr.addEventListener("click", go);
+        var go = function () { selectLoop(Number(tr.dataset.id), "table"); };
+        tr.addEventListener("click", function (e) { e.stopPropagation(); go(); });
         tr.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
       });
     }
 
     function renderDetail() {
       var l = state.loops.find(function (x) { return x.id === state.selectedId; });
-      if (!l) { $("detail").className = "detail-empty"; $("detail").textContent = "Click an arc or table row to see its anchors and statistics."; return; }
+      if (!l) { $("detail").className = "detail-empty"; $("detail").textContent = "Click an arc or table row to see its anchors and statistics. Click it again or press Esc to clear the selection."; return; }
       $("detail").className = "";
       $("detail").innerHTML =
         '<div class="detail-grid">' +
+        '<div class="detail-item"><span>Loop</span><strong>#' + l.id + '</strong></div>' +
         '<div class="detail-item"><span>Sample</span><strong>' + safeText(l.sample) + '</strong></div>' +
         '<div class="detail-item"><span>Anchor 1</span><strong>' + safeText(locus(l.chr1, l.start1, l.end1)) + '</strong></div>' +
         '<div class="detail-item"><span>Anchor 2</span><strong>' + safeText(locus(l.chr2, l.start2, l.end2)) + '</strong></div>' +
@@ -1865,11 +1867,12 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         (l.p !== null ? '<div class="detail-item"><span>Exact final p-value</span><strong>' + fmtProb(l.p) + '</strong></div>' : "") +
         (l.q !== null ? '<div class="detail-item"><span>Exact final q-value</span><strong>' + fmtProb(l.q) + '</strong></div>' : "") +
         (loopScore(l) !== null ? '<div class="detail-item"><span>−log10(q) score</span><strong>' + fmtScore(l) + '</strong></div>' : "") +
-        '</div><div class="detail-actions"><button class="small-btn ghost" id="centerLoopBtn">Center loop</button></div>';
+        '</div><div class="detail-actions"><button class="small-btn ghost" id="centerLoopBtn" type="button">Center loop</button><button class="small-btn ghost" id="clearLoopBtn" type="button">Clear selection</button></div>';
       $("centerLoopBtn").addEventListener("click", function () {
         var lo = Math.min(l.start1, l.start2), hi = Math.max(l.end1, l.end2), pad = Math.max(50000, (hi - lo) * .12);
         state.chrom = l.chr1; state.start = Math.max(0, lo - pad); state.end = hi + pad; renderAll();
       });
+      $("clearLoopBtn").addEventListener("click", clearLoopSelection);
     }
 
     function renderAll() {
@@ -1883,7 +1886,29 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       scheduleGeneTrack();
       scheduleSignalTrackQueries();
     }
-    function selectLoop(id) { state.selectedId = id; renderAll(); }
+    function toggledLoopSelection(currentId, id) { return currentId === id ? null : id; }
+    function revealSelectedTableRow() {
+      if (state.selectedId === null) return;
+      var row = $("loopRows").querySelector('tr[data-id="' + state.selectedId + '"]');
+      var scroller = document.querySelector(".table-scroll");
+      if (!row || !scroller) return;
+      var rowRect = row.getBoundingClientRect();
+      var scrollerRect = scroller.getBoundingClientRect();
+      var header = scroller.querySelector("thead");
+      var visibleTop = scrollerRect.top + (header ? header.getBoundingClientRect().height : 0);
+      if (rowRect.top < visibleTop) scroller.scrollTop -= visibleTop - rowRect.top;
+      else if (rowRect.bottom > scrollerRect.bottom) scroller.scrollTop += rowRect.bottom - scrollerRect.bottom;
+    }
+    function selectLoop(id, source) {
+      state.selectedId = toggledLoopSelection(state.selectedId, id);
+      renderAll();
+      if (state.selectedId !== null) revealSelectedTableRow();
+    }
+    function clearLoopSelection() {
+      if (state.selectedId === null) return;
+      state.selectedId = null;
+      renderAll();
+    }
 
     function parseRegion(value) {
       var m = String(value).trim().replace(/,/g, "").match(/^([^:\s]+):\s*(\d+)\s*(?:-|\.\.)\s*(\d+)$/);
@@ -2232,7 +2257,9 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
 
       svg.addEventListener("pointerdown", function (event) {
         if (!state.loops.length || event.button !== 0 || (event.pointerType && event.pointerType !== "mouse")) return;
-        var startedOnArc = !!(event.target.closest && event.target.closest(".arc"));
+        var arcTarget = event.target.closest && event.target.closest(".arc");
+        var startedOnArc = !!arcTarget;
+        var loopId = arcTarget ? Number(arcTarget.getAttribute("data-id")) : null;
         var point = svgPointFromEvent(event);
         var bounds = state.plotBounds;
         var mode = navigationModeAtPoint(point, bounds);
@@ -2240,7 +2267,7 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         plotNavigation.drag = {
           mode: mode, pointerId: event.pointerId, startX: point.x, start: state.start, end: state.end,
           left: bounds.left, right: bounds.right, top: bounds.zoomTop, bottom: bounds.bottom,
-          currentX: point.x, moved: false, group: null, view: null, startedOnArc: startedOnArc
+          currentX: point.x, moved: false, group: null, view: null, startedOnArc: startedOnArc, loopId: loopId
         };
         try { svg.setPointerCapture(event.pointerId); } catch (error) {}
         if (!startedOnArc) event.preventDefault();
@@ -2274,6 +2301,13 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         svg.classList.remove("selecting", "panning");
         try { svg.releasePointerCapture(event.pointerId); } catch (error) {}
         if (drag.group && drag.group.parentNode) drag.group.parentNode.removeChild(drag.group);
+        if (!drag.moved && !canceled && drag.startedOnArc && Number.isFinite(drag.loopId)) {
+          plotNavigation.suppressClick = true;
+          setTimeout(function () { plotNavigation.suppressClick = false; }, 0);
+          selectLoop(drag.loopId, "plot");
+          event.preventDefault();
+          return;
+        }
         if (drag.moved) {
           plotNavigation.suppressClick = true;
           setTimeout(function () { plotNavigation.suppressClick = false; }, 0);
@@ -2296,8 +2330,12 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         if (plotNavigation.drag && plotNavigation.drag.pointerId === event.pointerId) endDrag(event, true);
       });
       document.addEventListener("keydown", function (event) {
+        if (event.key !== "Escape") return;
         var drag = plotNavigation.drag;
-        if (event.key !== "Escape" || !drag) return;
+        if (!drag) {
+          if (!$("helpModal").classList.contains("open")) clearLoopSelection();
+          return;
+        }
         plotNavigation.drag = null;
         svg.classList.remove("selecting", "panning");
         if (drag.group && drag.group.parentNode) drag.group.parentNode.removeChild(drag.group);
@@ -2406,6 +2444,11 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       $("closeHelpBtn").addEventListener("click", function () { $("helpModal").classList.remove("open"); });
       $("helpModal").addEventListener("click", function (e) { if (e.target === $("helpModal")) $("helpModal").classList.remove("open"); });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape") $("helpModal").classList.remove("open"); });
+      document.addEventListener("click", function (e) {
+        if (state.selectedId === null || plotNavigation.suppressClick || !e.target.closest) return;
+        if (e.target.closest('.arc, tr[data-id], #detail, button, input, select, textarea, a, label, th')) return;
+        clearLoopSelection();
+      });
       Array.prototype.forEach.call(document.querySelectorAll("th[data-sort]"), function (th) {
         th.addEventListener("click", function () {
           var k = th.dataset.sort;
@@ -2441,6 +2484,50 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       test("reversed cis anchors normalized", function () {
         var l = parseText("chr3\t100\t110\tchr3\t10\t20", "x.bedpe").loops[0];
         return l.start1 === 10 && l.start2 === 100;
+      });
+      test("table row click selects, toggles, and clears from a blank click", function () {
+        var parsed = parseText("chr1\t9\t11\tchr1\t99\t101\t-\t8.5\t.\t.", "selection_IGV.bedpe");
+        parsed.loops[0].sampleId = "selection-test";
+        state.loops = parsed.loops;
+        state.samples = [{ id: "selection-test", name: "Selection test", enabled: true }];
+        state.metrics = { q: false, p: false, count: false, score: true };
+        state.chrom = "chr1"; state.start = 0; state.end = 200; state.gene = null; state.selectedId = null;
+        $("scoreFilter").value = "2";
+        renderAll();
+        var row = $("loopRows").querySelector("tr[data-id]");
+        if (!row) return false;
+        var id = Number(row.dataset.id);
+        row.click();
+        var selectedRow = $("loopRows").querySelector('tr[data-id="' + id + '"]');
+        var selected = state.selectedId === id && selectedRow && selectedRow.classList.contains("selected") && !!$("clearLoopBtn");
+        selectedRow.click();
+        var toggledOff = state.selectedId === null;
+        $("loopRows").querySelector('tr[data-id="' + id + '"]').click();
+        document.body.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        return selected && toggledOff && state.selectedId === null;
+      });
+      test("real arc pointer click synchronizes the table row and loop details", function () {
+        renderAll();
+        var arc = $("arcPlot").querySelector(".arc[data-id]");
+        if (!arc) return false;
+        var id = Number(arc.getAttribute("data-id"));
+        var point = arc.getPointAtLength(arc.getTotalLength() / 2);
+        var screenPoint = arc.ownerSVGElement.createSVGPoint();
+        screenPoint.x = point.x; screenPoint.y = point.y;
+        screenPoint = screenPoint.matrixTransform(arc.getScreenCTM());
+        arc.dispatchEvent(new PointerEvent("pointerdown", {
+          bubbles: true, button: 0, buttons: 1, pointerId: 919, pointerType: "mouse",
+          clientX: screenPoint.x, clientY: screenPoint.y
+        }));
+        $("arcPlot").dispatchEvent(new PointerEvent("pointerup", {
+          bubbles: true, button: 0, buttons: 0, pointerId: 919, pointerType: "mouse",
+          clientX: screenPoint.x, clientY: screenPoint.y
+        }));
+        var row = $("loopRows").querySelector('tr[data-id="' + id + '"]');
+        var synchronized = state.selectedId === id && row && row.classList.contains("selected") &&
+          row.getAttribute("aria-selected") === "true" && !!$("clearLoopBtn") && $("detail").textContent.indexOf("#" + id) >= 0;
+        clearLoopSelection();
+        return synchronized && state.selectedId === null;
       });
       test("coordinate parser", function () {
         state.loops = [{ chr1: "chr8" }];
@@ -2514,6 +2601,9 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         return navigationModeAtPoint({ x: 400, y: 42 }, bounds) === "zoom" &&
           navigationModeAtPoint({ x: 400, y: 200 }, bounds) === "pan" &&
           navigationModeAtPoint({ x: 40, y: 42 }, bounds) === null;
+      });
+      test("loop selection toggles off on a second click", function () {
+        return toggledLoopSelection(null, 7) === 7 && toggledLoopSelection(7, 7) === null && toggledLoopSelection(7, 8) === 8;
       });
       test("sample-name cleanup", function () {
         return sampleName("FitRT4_1.interactions_FitHiC_Q0.01_MergeNearContacts_IGV.bedpe") === "RT4_1";
