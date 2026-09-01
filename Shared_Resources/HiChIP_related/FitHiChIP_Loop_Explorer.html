@@ -24,6 +24,7 @@
     }
 
     * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
 
     body {
       margin: 0;
@@ -124,8 +125,12 @@
     .notice.warn { color: #725104; background: #fff8dd; border-color: #f0dc91; }
     .notice.ok { color: #12656d; background: var(--teal-soft); border-color: #b9e4e4; }
 
-    #workspace { display: none; margin-top: 18px; }
-    #workspace.ready { display: block; }
+    #workspace { margin-top: 18px; }
+    #workspace:not(.ready) > :not(.main-grid) { display: none; }
+    #workspace:not(.ready) .plot-card,
+    #workspace:not(.ready) .side > :not(.signal-card) { display: none; }
+    #workspace:not(.ready) .main-grid,
+    #workspace:not(.ready) .side { display: block; }
 
     .toolbar { padding: 18px; }
     .search-row {
@@ -168,7 +173,10 @@
     }
 
     .plot-wrap { position: relative; padding: 0 12px 8px; min-height: 430px; }
-    #arcPlot { width: 100%; height: auto; min-height: 410px; display: block; }
+    #arcPlot { width: 100%; height: auto; min-height: 410px; display: block; cursor: grab; user-select: none; }
+    #arcPlot #zoomRuler, #arcPlot #zoomRuler * { cursor: crosshair; }
+    #arcPlot.panning, #arcPlot.panning * { cursor: grabbing !important; }
+    #arcPlot.selecting, #arcPlot.selecting * { cursor: crosshair !important; }
     #arcPlot .arc { fill: none; cursor: pointer; transition: opacity .12s, stroke-width .12s; }
     #arcPlot .arc:hover, #arcPlot .arc:focus { opacity: 1 !important; stroke-width: 5 !important; }
     #arcPlot text { font-family: inherit; }
@@ -362,7 +370,7 @@
           <div class="panel-head">
             <div>
               <h2>Loop arcs</h2>
-              <p>Shared genomic axis with optional local ChIP-seq/ATAC-seq signal and RefSeq annotations. Dense windows show the strongest 150 loops per sample.</p>
+              <p>Drag the ruler above the loops to select and zoom · drag the tracks below it to pan left or right. The mouse wheel scrolls the page normally.</p>
             </div>
             <div class="legend" aria-label="Plot legend">
               <span>stronger <i class="gradient-key"></i> weaker evidence</span>
@@ -394,7 +402,7 @@
             <div id="geneTrackStatus" class="track-status">Gene and transcript annotations load for the visible region.</div>
           </section>
 
-          <section class="card">
+          <section class="card signal-card">
             <h3>ChIP-seq and ATAC-seq signal <span class="pill">optional</span></h3>
             <p class="signal-intro">Add local narrowPeak, broadPeak, or BigWig files. They stay on this computer and align to the same genomic axis.</p>
             <div class="signal-actions">
@@ -487,6 +495,7 @@
       </div>
       <ol>
         <li><strong>Search a gene, rsID, or region.</strong> Gene searches center on the gene; an rsID centers on its assembly-matched SNP and marks it with a yellow band.</li>
+        <li><strong>Navigate the shared tracks.</strong> Drag the amber ruler above the loops to select a region and zoom. Drag anywhere in the aligned tracks below the ruler to pan left or right. The mouse wheel scrolls the page normally; the arrow and +/− buttons remain available.</li>
         <li><strong>Compare samples.</strong> Load several files together; stacked lanes share one genomic axis. Use the sample checkboxes to isolate or combine datasets.</li>
         <li><strong>Loop color shows evidence.</strong> Soft coral (#FF7057) is stronger and blue is weaker. With an IGV export, color uses its column-8 −log10(q) score because exact q-values are no longer stored.</li>
         <li><strong>Dashed arcs are clipped.</strong> One anchor is visible and the other lies beyond the current window; zoom out or use “Fit gene contacts” to reveal both.</li>
@@ -525,12 +534,14 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       geneTrackKey: "", geneTrackTimer: null, geneTrackCache: {}, geneTrackError: "",
       geneTrackController: null,
       signalTracks: [], signalTrackTimer: null,
+      plotBounds: null,
       sortKey: "score", sortDir: -1, demo: false, metrics: { q: false, p: false, count: false, score: false }
     };
     var NS = "http://www.w3.org/2000/svg";
     var $ = function (id) { return document.getElementById(id); };
     var signalTrackCounter = 0;
     var signalColors = ["#0f8f83", "#b7791f", "#6d5bd0", "#0e7490", "#c45a3a", "#4f7c3b"];
+    var plotNavigation = { drag: null, frame: 0, suppressClick: false };
 
     var demoLines = [
       "chr1\ts1\te1\tchr2\ts2\te2\tcc\tCoverage1\tisPeak1\tBias1\tMapp1\tGCContent1\tRESites1\tCoverage2\tisPeak2\tBias2\tMapp2\tGCContent2\tRESites2\tDist\tp\texp_cc_Bias\tp_Bias\tdbinom_Bias\tP-Value_Bias\tQ-Value_Bias",
@@ -1157,7 +1168,9 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       var clampX = function (v) { return Math.max(left, Math.min(W - right, v)); };
       var laneCount = stacked ? Math.max(1, activeSamples.length) : 1;
       var laneHeight = !stacked ? 300 : laneCount === 1 ? 285 : laneCount === 2 ? 205 : laneCount === 3 ? 170 : 142;
-      var top = 34;
+      var zoomTop = 30;
+      var zoomBottom = 58;
+      var top = 72;
       var sampleBottom = top + laneHeight * laneCount;
       var axisY = sampleBottom + 6;
       var showGenes = $("showGeneTrack").checked;
@@ -1170,6 +1183,7 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       var annotationTop = signalTop + signalHeight;
       var H = annotationTop + geneHeight + transcriptHeight + 28;
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+      state.plotBounds = { left: left, right: W - right, zoomTop: zoomTop, zoomBottom: zoomBottom, panTop: top, bottom: H - 28 };
 
       var cap = 150;
       var filtered = activeLoops();
@@ -1184,8 +1198,20 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       $("shownStat").textContent = shown.length.toLocaleString() + (truncated ? "+" : "");
       $("emptyPlot").classList.toggle("show", !shown.length);
 
+      var zoomRuler = svgEl("g", { id: "zoomRuler", "aria-label": "Drag this ruler to select a genomic region and zoom" });
+      zoomRuler.appendChild(svgEl("rect", {
+        x: left, y: zoomTop, width: plotW, height: zoomBottom - zoomTop, rx: 8,
+        fill: "#FFFBEB", stroke: "#E7B33C", "stroke-width": 1.3
+      }));
+      zoomRuler.appendChild(svgEl("text", {
+        x: left + plotW / 2, y: zoomTop + 18, "text-anchor": "middle",
+        fill: "#8A5A08", "font-size": 10.5, "font-weight": 800, "letter-spacing": .7
+      }, "DRAG HERE TO SELECT A ZOOM REGION"));
+      svg.appendChild(zoomRuler);
+
       for (var t = 0; t <= 5; t++) {
         var pos = state.start + span * t / 5, tx = x(pos);
+        zoomRuler.appendChild(svgEl("line", { x1: tx, y1: zoomBottom - 6, x2: tx, y2: zoomBottom, stroke: "#C28A16", "stroke-width": 1 }));
         svg.appendChild(svgEl("line", { x1: tx, y1: top, x2: tx, y2: axisY, stroke: t === 0 || t === 5 ? "#bfccd5" : "#e2e9ee", "stroke-width": 1 }));
         svg.appendChild(svgEl("text", { x: tx, y: axisY + 25, "text-anchor": t === 0 ? "start" : t === 5 ? "end" : "middle", fill: "#617386", "font-size": 12 }, formatAxis(pos)));
       }
@@ -2089,13 +2115,213 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       return parseUcscVariantSearch(await response.json(), rsid, assembly);
     }
 
+    var MIN_VIEW_SPAN = 10000;
+    var MAX_VIEW_SPAN = 500000000;
+
+    function zoomWindowAt(start, end, fraction, factor) {
+      var span = Math.max(1, end - start);
+      var anchorFraction = Math.max(0, Math.min(1, fraction));
+      var nextSpan = Math.max(MIN_VIEW_SPAN, Math.min(MAX_VIEW_SPAN, span * factor));
+      var anchor = start + span * anchorFraction;
+      var nextStart = Math.max(0, anchor - nextSpan * anchorFraction);
+      return { start: nextStart, end: nextStart + nextSpan };
+    }
+
+    function panWindow(start, end, shift) {
+      var span = Math.max(1, end - start);
+      var nextStart = Math.max(0, start + shift);
+      return { start: nextStart, end: nextStart + span };
+    }
+
+    function setViewWindow(view) {
+      state.start = view.start;
+      state.end = view.end;
+      renderAll();
+    }
+
+    function previewViewWindow(view) {
+      state.start = view.start;
+      state.end = view.end;
+      if (plotNavigation.frame) return;
+      plotNavigation.frame = requestAnimationFrame(function () {
+        plotNavigation.frame = 0;
+        renderPlot();
+      });
+    }
+
+    function finishPanPreview() {
+      if (plotNavigation.frame) {
+        cancelAnimationFrame(plotNavigation.frame);
+        plotNavigation.frame = 0;
+      }
+      renderAll();
+    }
+
+    function selectionWindow(start, end, firstFraction, secondFraction) {
+      var span = Math.max(1, end - start);
+      var first = Math.max(0, Math.min(1, firstFraction));
+      var second = Math.max(0, Math.min(1, secondFraction));
+      var low = start + span * Math.min(first, second);
+      var high = start + span * Math.max(first, second);
+      if (high - low < MIN_VIEW_SPAN) {
+        var center = (low + high) / 2;
+        low = Math.max(0, Math.round(center - MIN_VIEW_SPAN / 2));
+        high = low + MIN_VIEW_SPAN;
+      } else {
+        low = Math.floor(low);
+        high = Math.ceil(high);
+      }
+      return { start: low, end: high };
+    }
+
+    function svgPointFromEvent(event) {
+      var svg = $("arcPlot");
+      var matrix = svg.getScreenCTM();
+      if (!matrix) return null;
+      var point = svg.createSVGPoint();
+      point.x = event.clientX;
+      point.y = event.clientY;
+      return point.matrixTransform(matrix.inverse());
+    }
+
+    function navigationModeAtPoint(point, bounds) {
+      if (!point || !bounds || point.x < bounds.left || point.x > bounds.right) return null;
+      if (point.y >= bounds.zoomTop && point.y <= bounds.zoomBottom) return "zoom";
+      if (point.y >= bounds.panTop && point.y <= bounds.bottom) return "pan";
+      return null;
+    }
+
+    function updateZoomSelection(svg, drag, currentX) {
+      var x = Math.max(drag.left, Math.min(drag.right, currentX));
+      var x1 = Math.min(drag.startX, x);
+      var x2 = Math.max(drag.startX, x);
+      if (!drag.group || !drag.group.isConnected) {
+        drag.group = svgEl("g", { id: "zoomSelection", "pointer-events": "none" });
+        drag.band = svgEl("rect", {
+          y: drag.top, height: drag.bottom - drag.top, rx: 4,
+          fill: "#FDE68A", "fill-opacity": .38, stroke: "#D97706", "stroke-width": 2
+        });
+        drag.labelBox = svgEl("rect", { y: drag.top + 5, height: 25, rx: 6, fill: "#FFFBEB", stroke: "#F4B740" });
+        drag.label = svgEl("text", {
+          y: drag.top + 22, "text-anchor": "middle", fill: "#7C4A03",
+          "font-size": 11, "font-weight": 700, "paint-order": "stroke", stroke: "#FFFBEB", "stroke-width": 3
+        });
+        drag.group.appendChild(drag.band);
+        drag.group.appendChild(drag.labelBox);
+        drag.group.appendChild(drag.label);
+        svg.appendChild(drag.group);
+      }
+      drag.currentX = x;
+      drag.band.setAttribute("x", x1);
+      drag.band.setAttribute("width", Math.max(1, x2 - x1));
+      var firstFraction = (drag.startX - drag.left) / Math.max(1, drag.right - drag.left);
+      var secondFraction = (x - drag.left) / Math.max(1, drag.right - drag.left);
+      var view = selectionWindow(drag.start, drag.end, firstFraction, secondFraction);
+      drag.view = view;
+      var labelText = state.chrom + ":" + fmtPos(view.start) + "–" + Math.round(view.end).toLocaleString("en-US") + " · release to zoom";
+      var labelWidth = Math.min(drag.right - drag.left, Math.max(150, labelText.length * 6.2 + 18));
+      var labelX = Math.max(drag.left + labelWidth / 2, Math.min(drag.right - labelWidth / 2, (x1 + x2) / 2));
+      drag.label.textContent = labelText;
+      drag.label.setAttribute("x", labelX);
+      drag.labelBox.setAttribute("x", labelX - labelWidth / 2);
+      drag.labelBox.setAttribute("width", labelWidth);
+    }
+
+    function wirePlotNavigation() {
+      var svg = $("arcPlot");
+
+      svg.addEventListener("pointerdown", function (event) {
+        if (!state.loops.length || event.button !== 0 || (event.pointerType && event.pointerType !== "mouse")) return;
+        var startedOnArc = !!(event.target.closest && event.target.closest(".arc"));
+        var point = svgPointFromEvent(event);
+        var bounds = state.plotBounds;
+        var mode = navigationModeAtPoint(point, bounds);
+        if (!mode) return;
+        plotNavigation.drag = {
+          mode: mode, pointerId: event.pointerId, startX: point.x, start: state.start, end: state.end,
+          left: bounds.left, right: bounds.right, top: bounds.zoomTop, bottom: bounds.bottom,
+          currentX: point.x, moved: false, group: null, view: null, startedOnArc: startedOnArc
+        };
+        try { svg.setPointerCapture(event.pointerId); } catch (error) {}
+        if (!startedOnArc) event.preventDefault();
+      });
+
+      svg.addEventListener("pointermove", function (event) {
+        var drag = plotNavigation.drag;
+        if (!drag || drag.pointerId !== event.pointerId) return;
+        var point = svgPointFromEvent(event);
+        if (!point) return;
+        var deltaX = point.x - drag.startX;
+        if (!drag.moved && Math.abs(deltaX) < 5) return;
+        drag.moved = true;
+        drag.currentX = point.x;
+        if (drag.mode === "zoom") {
+          svg.classList.add("selecting");
+          updateZoomSelection(svg, drag, point.x);
+        } else {
+          svg.classList.add("panning");
+          var span = drag.end - drag.start;
+          var shift = -(deltaX / Math.max(1, drag.right - drag.left)) * span;
+          previewViewWindow(panWindow(drag.start, drag.end, shift));
+        }
+        event.preventDefault();
+      });
+
+      function endDrag(event, canceled) {
+        var drag = plotNavigation.drag;
+        if (!drag || drag.pointerId !== event.pointerId) return;
+        plotNavigation.drag = null;
+        svg.classList.remove("selecting", "panning");
+        try { svg.releasePointerCapture(event.pointerId); } catch (error) {}
+        if (drag.group && drag.group.parentNode) drag.group.parentNode.removeChild(drag.group);
+        if (drag.moved) {
+          plotNavigation.suppressClick = true;
+          setTimeout(function () { plotNavigation.suppressClick = false; }, 0);
+          if (drag.mode === "zoom") {
+            if (!canceled && drag.view && Math.abs(drag.currentX - drag.startX) >= 8) setViewWindow(drag.view);
+          } else {
+            if (canceled) {
+              state.start = drag.start;
+              state.end = drag.end;
+            }
+            finishPanPreview();
+          }
+          event.preventDefault();
+        }
+      }
+
+      svg.addEventListener("pointerup", function (event) { endDrag(event, false); });
+      svg.addEventListener("pointercancel", function (event) { endDrag(event, true); });
+      svg.addEventListener("lostpointercapture", function (event) {
+        if (plotNavigation.drag && plotNavigation.drag.pointerId === event.pointerId) endDrag(event, true);
+      });
+      document.addEventListener("keydown", function (event) {
+        var drag = plotNavigation.drag;
+        if (event.key !== "Escape" || !drag) return;
+        plotNavigation.drag = null;
+        svg.classList.remove("selecting", "panning");
+        if (drag.group && drag.group.parentNode) drag.group.parentNode.removeChild(drag.group);
+        try { svg.releasePointerCapture(drag.pointerId); } catch (error) {}
+        if (drag.mode === "pan" && drag.moved) {
+          state.start = drag.start;
+          state.end = drag.end;
+          finishPanPreview();
+        }
+        event.preventDefault();
+      });
+      svg.addEventListener("click", function (event) {
+        if (!plotNavigation.suppressClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
+    }
+
     function pan(fraction) {
-      var span = state.end - state.start, shift = span * fraction;
-      state.start = Math.max(0, state.start + shift); state.end = state.start + span; renderAll();
+      var span = state.end - state.start;
+      setViewWindow(panWindow(state.start, state.end, span * fraction));
     }
     function zoom(factor) {
-      var center = (state.start + state.end) / 2, half = Math.max(5000, (state.end - state.start) * factor / 2);
-      state.start = Math.max(0, center - half); state.end = state.start + 2 * half; renderAll();
+      setViewWindow(zoomWindowAt(state.start, state.end, .5, factor));
     }
     function fitGeneContacts() {
       if (!state.gene) return showGeneNotice("Search a gene first, then use Fit gene contacts.", "warn");
@@ -2150,7 +2376,9 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       $("dropZone").addEventListener("drop", function (e) { handleFiles(e.dataTransfer.files); });
       $("dropZone").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("fileInput").click(); } });
       $("demoBtn").addEventListener("click", loadDemo);
+      wirePlotNavigation();
       $("assembly").addEventListener("change", function () {
+        renderSignalTrackControls();
         if (!state.loops.length) return;
         state.gene = null; state.variant = null;
         state.genes = []; state.transcripts = []; state.geneTrackKey = "";
@@ -2158,7 +2386,6 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         $("geneOnly").checked = false;
         $("geneOnly").disabled = true;
         showGeneNotice("Assembly changed. Search the gene or rsID again so its coordinates match the selected build.", "warn");
-        renderSignalTrackControls();
         renderAll();
       });
       $("searchBtn").addEventListener("click", findGene);
@@ -2250,6 +2477,43 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         return signalFileKind("GSM4752818_EV_full_UTXIP_merged_bigWig_norm.bw") === "bigWig" &&
           signalFileKind("GSM4752818_EV_full_merged_peaks.narrowPeak.gz") === "narrowPeak" &&
           signalFileKind("GSM4752827_EV_K27ac_broad_peaks.broadPeak.gz") === "broadPeak";
+      });
+      test("signal loader visible before loops", function () {
+        var workspace = $("workspace");
+        var wasReady = workspace.classList.contains("ready");
+        workspace.classList.remove("ready");
+        var signalCard = document.querySelector(".signal-card");
+        var plotCard = document.querySelector(".plot-card");
+        var signalVisible = signalCard && getComputedStyle(signalCard).display !== "none";
+        var plotHidden = plotCard && getComputedStyle(plotCard).display === "none";
+        if (wasReady) workspace.classList.add("ready");
+        return signalVisible && plotHidden && $("signalFileInput").multiple;
+      });
+      test("centered zoom helper preserves its anchor", function () {
+        var view = zoomWindowAt(100000, 200000, .25, .5);
+        var oldAnchor = 100000 + (200000 - 100000) * .25;
+        var newAnchor = view.start + (view.end - view.start) * .25;
+        return view.start === 112500 && view.end === 162500 && oldAnchor === newAnchor;
+      });
+      test("button pan preserves span and clamps at zero", function () {
+        var view = panWindow(1000, 11000, -5000);
+        return view.start === 0 && view.end === 10000;
+      });
+      test("drag selection converts to a genomic window", function () {
+        var forward = selectionWindow(100000, 200000, .2, .6);
+        var reverse = selectionWindow(100000, 200000, .6, .2);
+        return forward.start === 120000 && forward.end === 160000 &&
+          reverse.start === forward.start && reverse.end === forward.end;
+      });
+      test("tiny drag selection expands to 10 kb", function () {
+        var view = selectionWindow(0, 100000, 0, .001);
+        return view.start === 0 && view.end === 10000;
+      });
+      test("zoom ruler and pan body are separate zones", function () {
+        var bounds = { left: 100, right: 1100, zoomTop: 30, zoomBottom: 58, panTop: 72, bottom: 500 };
+        return navigationModeAtPoint({ x: 400, y: 42 }, bounds) === "zoom" &&
+          navigationModeAtPoint({ x: 400, y: 200 }, bounds) === "pan" &&
+          navigationModeAtPoint({ x: 40, y: 42 }, bounds) === null;
       });
       test("sample-name cleanup", function () {
         return sampleName("FitRT4_1.interactions_FitHiC_Q0.01_MergeNearContacts_IGV.bedpe") === "RT4_1";
