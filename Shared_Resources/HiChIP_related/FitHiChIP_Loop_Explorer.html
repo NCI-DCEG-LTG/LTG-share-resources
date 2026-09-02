@@ -291,13 +291,13 @@
         </div>
         <div>
           <h1>FitHiChIP Loop Explorer</h1>
-          <p class="tagline">Load loop files, find a gene or SNP, and inspect candidate contacts.</p>
+          <p class="tagline">Load FitHiChIP or Loop Catalog files, find a gene or SNP, and inspect candidate contacts.</p>
         </div>
       </div>
       <div class="privacy">🔒 Loaded genomic files stay in your browser</div>
     </header>
 
-    <section class="card load-card" aria-label="Load FitHiChIP results">
+    <section class="card load-card" aria-label="Load loop results">
       <label>
         <span>1 · Genome assembly</span>
         <select id="assembly">
@@ -309,10 +309,10 @@
         </select>
       </label>
       <div>
-        <span class="label">2 · FitHiChIP loop file</span>
-        <label class="drop" id="dropZone" for="fileInput" tabindex="0" role="button" aria-label="Choose or drop a FitHiChIP result file">
+        <span class="label">2 · Loop interaction file</span>
+        <label class="drop" id="dropZone" for="fileInput" tabindex="0" role="button" aria-label="Choose or drop FitHiChIP or Loop Catalog loop files">
           <span class="drop-icon">↥</span>
-          <span><strong id="dropTitle">Drop one or more results here</strong><small>Compare files together · best: <code>interactions_FitHiC_Q*.bed</code> · also merged BED or <code>_IGV.bedpe</code></small></span>
+          <span><strong id="dropTitle">Drop one or more results here</strong><small>FitHiChIP Q/merged/<code>_IGV.bedpe</code> · Loop Catalog <code>*.longrange.bed.gz</code></small></span>
         </label>
         <input id="fileInput" type="file" accept=".bed,.bedpe,.txt,.tsv,.gz" multiple>
       </div>
@@ -321,7 +321,7 @@
         <button id="demoBtn" class="ghost" type="button">Try MYC demo</button>
       </div>
     </section>
-    <div id="loadNotice" class="notice">Choose the assembly used by FitHiChIP. The assembly is not stored in a BEDPE file.</div>
+    <div id="loadNotice" class="notice">Choose the assembly used to generate the loop file. The assembly is not reliably stored in loop files.</div>
 
     <main id="workspace">
       <section class="card toolbar">
@@ -359,7 +359,7 @@
 
       <section class="stats" aria-label="Loop summary">
         <div class="card stat"><div class="value" id="sampleStat">0</div><div class="name">samples loaded</div></div>
-        <div class="card stat"><div class="value" id="totalStat">0</div><div class="name">loops loaded</div></div>
+        <div class="card stat"><div class="value" id="totalStat">0</div><div class="name">unique loops loaded</div></div>
         <div class="card stat"><div class="value" id="cisStat">0</div><div class="name">cis loops</div></div>
         <div class="card stat"><div class="value" id="shownStat">0</div><div class="name">shown in region</div></div>
         <div class="card stat"><div class="value" id="geneStat">—</div><div class="name">touch selected gene</div></div>
@@ -418,9 +418,9 @@
           <section class="card">
             <h3>Refine the view</h3>
             <label class="control">
-              <span>Minimum −log10(q) score</span>
-              <input id="scoreFilter" type="number" min="0" max="500" step="0.5" value="2">
-              <div class="metric-hint" id="scoreHint">Score 2 corresponds to q=0.01; larger is stronger.</div>
+              <span>Minimum evidence score</span>
+              <input id="scoreFilter" type="number" min="0" max="500" step="0.5" value="0">
+              <div class="metric-hint" id="scoreHint">No minimum by default; larger scores indicate stronger evidence.</div>
             </label>
             <label class="control">
               <span>Minimum contacts</span>
@@ -468,7 +468,7 @@
               <th data-sort="a2">Anchor 2</th>
               <th data-sort="distance">Distance</th>
               <th data-sort="count">Contacts</th>
-              <th data-sort="score">−log10(q) score</th>
+              <th data-sort="score">Evidence score</th>
             </tr></thead>
             <tbody id="loopRows"></tbody>
           </table>
@@ -476,15 +476,16 @@
       </section>
 
       <section class="card guide">
-        <div><h3>What an arc means</h3><p>A FitHiChIP arc is a <strong>statistically called interaction between two genomic bins</strong>, not a photograph of a physical loop.</p></div>
-        <div><h3>What this viewer adds</h3><p>It helps you find a gene or rsID, highlight its position, inspect counts and −log10(q) scores, and export the currently shown calls.</p></div>
-        <div><h3>Important limit</h3><p>Optional peak/signal tracks add ChIP-seq or ATAC-seq context, but without a .hic/.cool matrix this page still cannot show contact intensity. Visual presence/absence is not a differential-loop statistical test.</p></div>
+        <div><h3>What an arc means</h3><p>An arc represents a <strong>candidate interaction between two genomic bins</strong> identified by the loop-calling method. It indicates statistical evidence that the two regions interact, but it is not a direct interaction probability.</p></div>
+        <div><h3>Contacts</h3><p>For FitHiChIP results, this is the observed contact count (<strong>cc</strong>) supporting the bin pair. Higher counts mean more read support but also depend on sequencing depth and local coverage. <strong>—</strong> means the input file does not include contact counts.</p></div>
+        <div><h3>Evidence score</h3><p>Higher values indicate stronger statistical support: <strong>2 = 0.01</strong>, <strong>5 = 10<sup>−5</sup></strong>, and <strong>10 = 10<sup>−10</sup></strong>. FitHiChIP IGV uses −log10(q), Loop Catalog FC/FH uses −log10(Q-Value_Bias), and HiCCUPS uses −log10(donut FDR). Compare scores mainly within the same method and settings.</p></div>
       </section>
     </main>
 
     <footer>
-      Single-file, client-side viewer · FitHiChIP format guidance:
-      <a href="https://ay-lab.github.io/FitHiChIP/html/usage/output.html" target="_blank" rel="noopener">official output documentation</a>
+      Single-file, client-side viewer · Format guidance:
+      <a href="https://ay-lab.github.io/FitHiChIP/html/usage/output.html" target="_blank" rel="noopener">FitHiChIP outputs</a> ·
+      <a href="https://loopcatalog.lji.org/tutorial/?genome=hg38" target="_blank" rel="noopener">Loop Catalog</a>
     </footer>
   </div>
 
@@ -498,10 +499,11 @@
         <li><strong>Search a gene, rsID, or region.</strong> Gene searches center on the gene; an rsID centers on its assembly-matched SNP and marks it with a yellow band.</li>
         <li><strong>Navigate the shared tracks.</strong> Drag the amber ruler above the loops to select a region and zoom. Drag anywhere in the aligned tracks below the ruler to pan left or right. The mouse wheel scrolls the page normally; the arrow and +/− buttons remain available.</li>
         <li><strong>Compare samples.</strong> Load several files together; stacked lanes share one genomic axis. Use the sample checkboxes to isolate or combine datasets.</li>
-        <li><strong>Loop color shows evidence.</strong> Soft coral (#FF7057) is stronger and blue is weaker. With an IGV export, color uses its column-8 −log10(q) score because exact q-values are no longer stored.</li>
+        <li><strong>Loop color shows evidence.</strong> Soft coral (#FF7057) is stronger and blue is weaker. FitHiChIP IGV and Loop Catalog files store transformed significance scores rather than the underlying q-value or donut FDR.</li>
         <li><strong>Dashed arcs are clipped.</strong> One anchor is visible and the other lies beyond the current window; zoom out or use “Fit gene contacts” to reveal both.</li>
         <li><strong>Click an arc or row.</strong> The selected loop receives a dark outline and its sample, anchors, and available statistics appear at right. Click it again, click a blank area, use “Clear selection,” or press Esc to remove the highlight.</li>
         <li><strong>Add ChIP-seq or ATAC-seq context if available.</strong> Local narrowPeak and broadPeak files appear as peak blocks; local BigWig files appear as continuous signal with numeric values on the right. Each BigWig lane autoscales separately, so compare values only when the files use comparable units and normalization.</li>
+        <li><strong>Loop Catalog files are supported directly.</strong> FC and FH scores are −log10(Q-Value_Bias); HiCCUPS scores are −log10(donut FDR). Reciprocal long-range records are collapsed into one loop. The downloaded file does not retain its Stringent/Loose directory label, so record that information in your analysis notes.</li>
         <li><strong>The gene track</strong> is fetched from UCSC NCBI RefSeq for the visible region. A selected gene is highlighted.</li>
         <li><strong>Be careful with interpretation.</strong> An overlapping loop is a candidate regulatory contact; confirming enhancer–gene function needs additional evidence.</li>
       </ol>
@@ -530,7 +532,7 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
     "use strict";
 
     var state = {
-      loops: [], shown: [], samples: [], fileName: "", sourceType: "", warnings: [],
+      loops: [], shown: [], samples: [], fileName: "", sourceType: "", warnings: [], notes: [], scoreLabels: [],
       chrom: "", start: 0, end: 1, gene: null, variant: null, genes: [], transcripts: [], selectedId: null,
       geneTrackKey: "", geneTrackTimer: null, geneTrackCache: {}, geneTrackError: "",
       geneTrackController: null,
@@ -591,6 +593,10 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       var n = Number(v);
       return Number.isFinite(n) ? n : null;
     }
+    function significanceOrNull(v) {
+      if (/^\+?inf(?:inity)?$/i.test(String(v === undefined || v === null ? "" : v).trim())) return Infinity;
+      return finiteOrNull(v);
+    }
     function firstIndex(headers, names) {
       for (var i = 0; i < names.length; i++) {
         var idx = headers.indexOf(normHeader(names[i]));
@@ -640,12 +646,55 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       if (loop.q !== null) return Math.min(500, -Math.log10(Math.max(loop.q, 1e-500)));
       return loop.score;
     }
+    function loopScoreLabel(loop) {
+      if (loop.q !== null) return "−log10(q)";
+      return loop.scoreLabel || "Evidence score";
+    }
     function fmtScore(loop) {
       var score = loopScore(loop);
+      if (score === Infinity) return "∞";
       if (score === null || !Number.isFinite(score)) return "—";
-      return fmtNum(score) + (score >= 500 ? " · capped" : "");
+      var capped = (loop.q !== null && score >= 500) || loop.scoreCapped;
+      return fmtNum(score) + (capped ? " · capped" : "");
+    }
+    function loopCatalogFileInfo(fileName) {
+      var clean = String(fileName || "").replace(/\.gz$/i, "");
+      var match = clean.match(/^(.*)\.(\d+)\.(fithichip_cp|fithichip_hp|hiccups)\.longrange\.bed$/i);
+      var token = match ? match[3].toLowerCase() : "";
+      var resolution = match ? Number(match[2]) : null;
+      var resolutionLabel = resolution !== null ? (resolution % 1000 === 0 ? (resolution / 1000) + " kb" : resolution + " bp") : "";
+      var info = {
+        recognized: !!match, baseName: match ? match[1] : "", code: "", resolution: resolution,
+        resolutionLabel: resolutionLabel, type: "WashU long-range interactions",
+        scoreLabel: "Long-range interaction score", scoreSource: "WashU_longrange_column_4"
+      };
+      if (token === "fithichip_cp") {
+        info.code = "FC";
+        info.type = "Loop Catalog FC loops";
+        info.scoreLabel = "−log10(Q-Value_Bias)";
+        info.scoreSource = "Loop_Catalog_FC_neglog10_Q-Value_Bias";
+      } else if (token === "fithichip_hp") {
+        info.code = "FH";
+        info.type = "Loop Catalog FH loops";
+        info.scoreLabel = "−log10(Q-Value_Bias)";
+        info.scoreSource = "Loop_Catalog_FH_neglog10_Q-Value_Bias";
+      } else if (token === "hiccups") {
+        info.code = "HiCCUPS";
+        info.type = "Loop Catalog HiCCUPS loops";
+        info.scoreLabel = "−log10(donut FDR)";
+        info.scoreSource = "Loop_Catalog_HiCCUPS_neglog10_donut_FDR";
+      }
+      if (info.recognized && resolutionLabel) info.type += " (" + resolutionLabel + ")";
+      return info;
     }
     function sampleName(fileName) {
+      var catalog = loopCatalogFileInfo(fileName);
+      if (catalog.recognized) {
+        var base = catalog.baseName;
+        var standard = base.match(/^(.*?)\.(?:GSE\d+|phs\d+(?:v\d+p\d+)?)\.(?:Homo_Sapiens|Mus_Musculus)\.([^.]+)\.b\d+$/i);
+        if (standard) base = standard[1] + " · " + standard[2];
+        return base + " · " + catalog.code + (catalog.resolutionLabel ? " · " + catalog.resolutionLabel : "");
+      }
       var name = String(fileName || "sample").replace(/\.gz$/i, "").replace(/\.(bedpe|bed|txt|tsv)$/i, "");
       name = name.replace(/\.interactions_FitHiC.*$/i, "");
       return name.replace(/^Fit(?=[A-Za-z0-9])/, "") || "sample";
@@ -653,6 +702,79 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
     function locus(chr, s, e) { return chr + ":" + fmtPos(s) + "–" + Math.round(e).toLocaleString("en-US"); }
     function safeText(s) {
       return String(s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]; });
+    }
+
+    function parseLongRangePartner(value) {
+      var match = String(value || "").trim().match(/^([^:\s,]+):(\d+)-(\d+),([^,\s]+)$/);
+      if (!match) return null;
+      var start = Number(match[2]), end = Number(match[3]), score = significanceOrNull(match[4]);
+      if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end <= start || score === null) return null;
+      return { chr: match[1], start: start, end: end, score: score };
+    }
+    function longRangeAnchorKey(chr, start, end) {
+      return canonicalChr(chr) + ":" + start + "-" + end;
+    }
+    function parseLongRange(lines, fileName) {
+      var metadata = loopCatalogFileInfo(fileName);
+      var loops = [], seen = new Map(), malformed = 0, duplicateRows = 0, scoreConflicts = 0, trans = 0;
+      for (var i = 0; i < lines.length; i++) {
+        var c = splitLine(lines[i]);
+        var partner = c.length === 4 ? parseLongRangePartner(c[3]) : null;
+        var start1 = Number(c[1]), end1 = Number(c[2]), chr1 = c[0];
+        if (!chr1 || !Number.isInteger(start1) || !Number.isInteger(end1) || start1 < 0 || end1 <= start1 || !partner) {
+          malformed++;
+          continue;
+        }
+        var chr2 = partner.chr, start2 = partner.start, end2 = partner.end;
+        var key1 = longRangeAnchorKey(chr1, start1, end1), key2 = longRangeAnchorKey(chr2, start2, end2);
+        var shouldSwap = sameChr(chr1, chr2)
+          ? (start1 > start2 || (start1 === start2 && end1 > end2))
+          : key1 > key2;
+        if (shouldSwap) {
+          var tc = chr1, ts = start1, te = end1;
+          chr1 = chr2; start1 = start2; end1 = end2; chr2 = tc; start2 = ts; end2 = te;
+          var tk = key1; key1 = key2; key2 = tk;
+        }
+        var key = key1 + "|" + key2;
+        if (seen.has(key)) {
+          duplicateRows++;
+          var existing = loops[seen.get(key)];
+          if (existing.sourceScore !== partner.score) {
+            scoreConflicts++;
+            if (partner.score > existing.sourceScore) {
+              existing.sourceScore = partner.score;
+              existing.scoreCapped = metadata.recognized && (partner.score === Infinity || partner.score >= 500);
+              existing.score = existing.scoreCapped ? 500 : partner.score;
+            }
+          }
+          continue;
+        }
+        if (!sameChr(chr1, chr2)) trans++;
+        var scoreCapped = metadata.recognized && (partner.score === Infinity || partner.score >= 500);
+        var loop = {
+          id: loops.length + 1, chr1: chr1, start1: start1, end1: end1, chr2: chr2, start2: start2, end2: end2,
+          count: null, p: null, q: null, score: scoreCapped ? 500 : partner.score, sourceScore: partner.score,
+          scoreLabel: metadata.scoreLabel, scoreSource: metadata.scoreSource, scoreCapped: scoreCapped
+        };
+        loop.distance = sameChr(chr1, chr2) ? Math.abs((start2 + end2 - start1 - end1) / 2) : Infinity;
+        seen.set(key, loops.length);
+        loops.push(loop);
+      }
+      if (!loops.length) throw new Error("No valid WashU long-range records were found. Expected: chr, start, end, chr:start-end,score.");
+      var cappedLoops = loops.filter(function (loop) { return loop.scoreCapped; }).length;
+      var infiniteLoops = loops.filter(function (loop) { return loop.sourceScore === Infinity; }).length;
+      return {
+        loops: loops, type: metadata.type, scoreLabel: metadata.scoreLabel,
+        notes: [
+          duplicateRows ? duplicateRows.toLocaleString() + " reciprocal/duplicate record" + (duplicateRows === 1 ? "" : "s") + " collapsed into unique loops." : "",
+          cappedLoops ? cappedLoops.toLocaleString() + " source score" + (cappedLoops === 1 ? " was" : "s were") + " capped at 500 for display." + (infiniteLoops ? " " + infiniteLoops.toLocaleString() + (infiniteLoops === 1 ? " was" : " were") + " ∞ in the source file." : "") : ""
+        ].filter(Boolean),
+        warnings: [
+          malformed ? malformed.toLocaleString() + " malformed long-range row" + (malformed === 1 ? "" : "s") + " skipped." : "",
+          scoreConflicts ? scoreConflicts.toLocaleString() + " duplicate score conflict" + (scoreConflicts === 1 ? "" : "s") + " resolved by keeping the stronger score." : "",
+          trans ? trans.toLocaleString() + " trans-chromosomal loop" + (trans === 1 ? "" : "s") + " retained in the table but not drawn on a single-chromosome arc view." : ""
+        ].filter(Boolean)
+      };
     }
 
     function parseText(text, fileName) {
@@ -664,6 +786,8 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       if (!lines.length) throw new Error("No tabular loop records were found.");
 
       var first = splitLine(lines[0]);
+      var firstLongRange = first.length === 4 && isInt(first[1]) && isInt(first[2]) ? parseLongRangePartner(first[3]) : null;
+      if (firstLongRange) return parseLongRange(lines, fileName);
       var hasHeader = !(isInt(first[1]) && isInt(first[2]) && isInt(first[4]) && isInt(first[5]));
       var headers = hasHeader ? first.map(normHeader) : [];
       var startAt = hasHeader ? 1 : 0;
@@ -671,7 +795,7 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       var spec = {
         chr1: 0, s1: 1, e1: 2, chr2: 3, s2: 4, e2: 5,
         count: -1, p: -1, q: -1, score: -1,
-        type: hasHeader ? "headered BEDPE" : "BEDPE", scoreLabel: "display score"
+        type: hasHeader ? "headered BEDPE" : "BEDPE", scoreLabel: "Display score", scoreSource: "input_score_column", scoreCap: null
       };
 
       if (hasHeader) {
@@ -698,7 +822,9 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         if (igvLike) {
           spec.score = 7;
           spec.type = "FitHiChIP IGV export";
-          spec.scoreLabel = "−log10(q), capped at 500";
+          spec.scoreLabel = "−log10(q)";
+          spec.scoreSource = "FitHiChIP_IGV_column_8_neglog10_q";
+          spec.scoreCap = 500;
         } else if (mergeLike) {
           spec.count = 6; spec.p = 7; spec.q = 8; spec.type = "FitHiChIP merged contacts (headerless)";
         } else if (rawLike) {
@@ -732,14 +858,20 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
           count: spec.count >= 0 ? finiteOrNull(c[spec.count]) : null,
           p: spec.p >= 0 ? finiteOrNull(c[spec.p]) : null,
           q: spec.q >= 0 ? finiteOrNull(c[spec.q]) : null,
-          score: spec.score >= 0 ? finiteOrNull(c[spec.score]) : null
+          score: spec.score >= 0 ? finiteOrNull(c[spec.score]) : null,
+          scoreLabel: spec.scoreLabel, scoreSource: spec.scoreSource, scoreCapped: false
         };
+        loop.sourceScore = loop.score;
+        if (loop.score !== null && spec.scoreCap !== null && loop.score >= spec.scoreCap) {
+          loop.score = spec.scoreCap;
+          loop.scoreCapped = true;
+        }
         loop.distance = sameChr(chr1, chr2) ? Math.abs((s2 + e2 - s1 - e1) / 2) : Infinity;
         loops.push(loop);
       }
       if (!loops.length) throw new Error("No valid BEDPE records were found. Six coordinate columns are required.");
       return {
-        loops: loops, type: spec.type, scoreLabel: spec.scoreLabel,
+        loops: loops, type: spec.type, scoreLabel: spec.scoreLabel, notes: [],
         warnings: [
           malformed ? malformed + " malformed row" + (malformed === 1 ? "" : "s") + " skipped." : "",
           trans ? trans + " trans-chromosomal row" + (trans === 1 ? "" : "s") + " retained in the table but not drawn on a single-chromosome arc view." : "",
@@ -958,18 +1090,55 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       }
     }
 
+    function bgzfBlockSizeAt(bytes, offset) {
+      if (offset < 0 || offset + 18 > bytes.length || bytes[offset] !== 31 || bytes[offset + 1] !== 139 || bytes[offset + 2] !== 8 || !(bytes[offset + 3] & 4)) return null;
+      var extraLength = bytes[offset + 10] | (bytes[offset + 11] << 8);
+      var cursor = offset + 12, extraEnd = cursor + extraLength;
+      if (extraEnd > bytes.length) return null;
+      while (cursor + 4 <= extraEnd) {
+        var subfieldLength = bytes[cursor + 2] | (bytes[cursor + 3] << 8);
+        var valueStart = cursor + 4, valueEnd = valueStart + subfieldLength;
+        if (valueEnd > extraEnd) return null;
+        if (bytes[cursor] === 66 && bytes[cursor + 1] === 67 && subfieldLength === 2) {
+          var blockSize = (bytes[valueStart] | (bytes[valueStart + 1] << 8)) + 1;
+          return blockSize >= 18 && blockSize <= 65536 && offset + blockSize <= bytes.length ? blockSize : null;
+        }
+        cursor = valueEnd;
+      }
+      return null;
+    }
+
+    async function decompressGzipMember(buffer) {
+      var stream = new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip"));
+      return new Uint8Array(await new Response(stream).arrayBuffer());
+    }
+
+    async function decompressGzipBuffer(buffer) {
+      if (!("DecompressionStream" in window)) throw new Error("This browser cannot decompress .gz files. Please decompress the file first.");
+      var bytes = new Uint8Array(buffer);
+      var firstBlockSize = bgzfBlockSizeAt(bytes, 0);
+      if (!firstBlockSize) return (await decompressGzipMember(buffer)).buffer;
+
+      var chunks = [], offset = 0;
+      while (offset < bytes.length) {
+        var blockSize = bgzfBlockSizeAt(bytes, offset);
+        if (!blockSize) throw new Error("This BGZF file contains a damaged or truncated block near byte " + offset.toLocaleString() + ".");
+        chunks.push(await decompressGzipMember(buffer.slice(offset, offset + blockSize)));
+        offset += blockSize;
+      }
+      return await new Blob(chunks).arrayBuffer();
+    }
+
     async function fileToText(file, purpose) {
       var buffer = await file.arrayBuffer();
       if (/\.gz$/i.test(file.name)) {
-        if (!("DecompressionStream" in window)) throw new Error("This browser cannot decompress .gz files. Please decompress it first.");
-        var stream = new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip"));
-        buffer = await new Response(stream).arrayBuffer();
+        buffer = await decompressGzipBuffer(buffer);
       }
       var view = new DataView(buffer.slice(0, Math.min(buffer.byteLength, 8)));
       var bigBedMagic = 0x8789F2EB;
       if (buffer.byteLength >= 4 && (view.getUint32(0, true) === bigBedMagic || view.getUint32(0, false) === bigBedMagic)) {
         throw new Error(purpose === "loop"
-          ? "This is a binary BigInteract/BigBed file. Load the original FitHiChIP Q*.bed or _IGV.bedpe instead."
+          ? "This is a binary BigInteract/BigBed file. Load a text FitHiChIP Q/IGV file or a Loop Catalog .longrange.bed.gz file instead."
           : "This is a binary BigBed file, not peak text. Choose a .narrowPeak(.gz) or .broadPeak(.gz) file, or add continuous signal as .bw/.bigWig.");
       }
       var bytes = new Uint8Array(buffer.slice(0, Math.min(buffer.byteLength, 4096)));
@@ -977,7 +1146,7 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       for (var i = 0; i < bytes.length; i++) if (bytes[i] === 0) nulls++;
       if (nulls > 2 || (purpose === "loop" && /_ucsc\.bed$/i.test(file.name))) {
         throw new Error(purpose === "loop"
-          ? "FitHiChIP's _UCSC.bed is usually binary BigInteract. Load the original Q*.bed or _IGV.bedpe instead."
+          ? "FitHiChIP's _UCSC.bed is usually binary BigInteract. Load the original Q*.bed, _IGV.bedpe, or a Loop Catalog .longrange.bed.gz file instead."
           : "This signal file is binary or not valid peak text. Use .narrowPeak(.gz), .broadPeak(.gz), or .bw/.bigWig.");
       }
       return new TextDecoder("utf-8", { fatal: false }).decode(buffer);
@@ -991,6 +1160,7 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
     }
     function significanceColor(loop) {
       var score = loopScore(loop);
+      if (score === Infinity) return "rgb(255,112,87)";
       if (score === null || !Number.isFinite(score)) return "#64748b";
       var z = Math.max(0, Math.min(1, (score - 2) / 38));
       var stops = z < .5
@@ -1028,6 +1198,7 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       state.loops = [];
       state.samples = [];
       state.warnings = [];
+      state.notes = [];
       items.forEach(function (item, sampleIndex) {
         var sampleId = "sample_" + (sampleIndex + 1);
         var shortName = sampleName(item.fileName);
@@ -1042,7 +1213,12 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
           state.loops.push(loop);
         });
         item.parsed.warnings.forEach(function (warning) {
-          if (state.warnings.indexOf(warning) < 0) state.warnings.push(warning);
+          var labeledWarning = items.length > 1 ? shortName + ": " + warning : warning;
+          if (state.warnings.indexOf(labeledWarning) < 0) state.warnings.push(labeledWarning);
+        });
+        (item.parsed.notes || []).forEach(function (note) {
+          var labeledNote = items.length > 1 ? shortName + ": " + note : note;
+          if (state.notes.indexOf(labeledNote) < 0) state.notes.push(labeledNote);
         });
       });
       state.fileName = items.map(function (item) { return item.fileName; }).join(", ");
@@ -1055,22 +1231,31 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         count: state.loops.some(function (l) { return l.count !== null; }),
         score: state.loops.some(function (l) { return l.score !== null; })
       };
+      state.scoreLabels = Array.from(new Set(state.loops.map(function (loop) {
+        return loopScore(loop) !== null ? loopScoreLabel(loop) : "";
+      }).filter(Boolean)));
       chooseInitialRegion();
       $("workspace").classList.add("ready");
       $("dropTitle").textContent = items.length === 1 ? items[0].fileName : items.length + " files selected";
       $("sampleStat").textContent = state.samples.length.toLocaleString();
       $("totalStat").textContent = state.loops.length.toLocaleString();
       $("cisStat").textContent = state.loops.filter(function (l) { return sameChr(l.chr1, l.chr2); }).length.toLocaleString();
-      $("metricStat").textContent = state.metrics.q || state.metrics.score ? "−log10(q)" : state.metrics.count ? "contacts" : "none";
+      var hasQScore = state.scoreLabels.some(function (label) { return /q|Q-Value/.test(label); });
+      var hasFdrScore = state.scoreLabels.some(function (label) { return /FDR/i.test(label); });
+      var hasOtherScore = state.scoreLabels.some(function (label) { return !/q|Q-Value|FDR/i.test(label); });
+      $("metricStat").textContent = hasQScore && !hasFdrScore && !hasOtherScore ? "−log10(q)" : hasFdrScore && !hasQScore && !hasOtherScore ? "−log10(FDR)" : state.metrics.q || state.metrics.score ? "evidence" : state.metrics.count ? "contacts" : "none";
       $("scoreFilter").disabled = !(state.metrics.q || state.metrics.score);
       $("countFilter").disabled = !state.metrics.count;
-      $("scoreHint").textContent = state.metrics.q ? "Computed from exact q. Blue at score 2; soft coral at score ≥40." : state.metrics.score ? "Read directly from IGV column 8. Blue at 2; soft coral at ≥40." : "No q-value or −log10(q) score; filter disabled.";
-      $("countHint").textContent = state.metrics.count ? "Contact counts detected." : "IGV exports do not retain contact counts.";
+      $("scoreFilter").value = "0";
+      $("countFilter").value = "0";
+      $("scoreHint").textContent = state.metrics.q || state.metrics.score ? "Source: " + state.scoreLabels.join(" / ") + ". Blue at 2; soft coral at ≥40." : "No q-value or evidence score; filter disabled.";
+      $("countHint").textContent = state.metrics.count ? "Contact counts detected." : "This loop format does not retain contact counts.";
       $("geneOnly").checked = false; $("geneOnly").disabled = true;
       $("geneNotice").style.display = "none";
       $("plotLayout").value = state.samples.length > 1 ? "stacked" : "overlay";
       renderSampleControls();
       var message = state.samples.length + " sample" + (state.samples.length === 1 ? "" : "s") + " · " + state.loops.length.toLocaleString() + " loops loaded as " + state.sourceType + ".";
+      if (state.notes.length) message += " " + state.notes.join(" ");
       if (state.warnings.length) message += " " + state.warnings.join(" ");
       showNotice(message, state.warnings.length ? "warn" : "ok");
       renderAll();
@@ -1153,6 +1338,28 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       return e;
     }
 
+    function compactSampleLabel(name, maximumCharacters) {
+      var text = String(name || "sample");
+      var limit = Math.max(5, Number(maximumCharacters) || 21);
+      if (text.length <= limit) return text;
+      var visible = limit - 1;
+      var head = Math.ceil(visible * .6);
+      var tail = visible - head;
+      return text.slice(0, head).replace(/\s+$/, "") + "\u2026" + text.slice(-tail).replace(/^\s+/, "");
+    }
+
+    function fitSampleLabel(textNode, name, maximumWidth) {
+      var text = String(name || "sample");
+      var limit = Math.min(28, text.length);
+      textNode.textContent = compactSampleLabel(text, limit);
+      if (typeof textNode.getComputedTextLength !== "function") return;
+      while (limit > 5 && textNode.getComputedTextLength() > maximumWidth) {
+        limit--;
+        textNode.textContent = compactSampleLabel(text, limit);
+      }
+      textNode.setAttribute("data-rendered-label", textNode.textContent);
+    }
+
     function renderPlot() {
       var svg = $("arcPlot");
       while (svg.firstChild) svg.removeChild(svg.firstChild);
@@ -1185,6 +1392,16 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       var H = annotationTop + geneHeight + transcriptHeight + 28;
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
       state.plotBounds = { left: left, right: W - right, zoomTop: zoomTop, zoomBottom: zoomBottom, panTop: top, bottom: H - 28 };
+
+      if (stacked) {
+        var defs = svgEl("defs");
+        var sampleLabelClip = svgEl("clipPath", { id: "sampleLaneLabelClip" });
+        sampleLabelClip.appendChild(svgEl("rect", {
+          x: 8, y: top, width: Math.max(0, left - 20), height: sampleBottom - top
+        }));
+        defs.appendChild(sampleLabelClip);
+        svg.appendChild(defs);
+      }
 
       var cap = 150;
       var filtered = activeLoops();
@@ -1223,7 +1440,18 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
           var laneTop = top + index * laneHeight;
           var baseY = laneTop + laneHeight - 24;
           svg.appendChild(svgEl("rect", { x: left, y: laneTop, width: plotW, height: laneHeight - 10, rx: 9, fill: index % 2 ? "#f6fafc" : "#fbfdfe", stroke: "#e3ebf0" }));
-          svg.appendChild(svgEl("text", { x: 12, y: laneTop + 22, fill: "#213b51", "font-size": 13, "font-weight": 800 }, sample.name));
+          var sampleLabel = svgEl("g", {
+            "clip-path": "url(#sampleLaneLabelClip)", "aria-label": sample.name,
+            "data-sample-lane-label": sample.name
+          });
+          sampleLabel.appendChild(svgEl("title", {}, sample.name + (sample.fileName && sample.fileName !== sample.name ? "\n" + sample.fileName : "")));
+          var sampleLabelText = svgEl("text", {
+            x: 12, y: laneTop + 22, fill: "#213b51", "font-size": 12,
+            "font-weight": 800
+          }, sample.name);
+          sampleLabel.appendChild(sampleLabelText);
+          svg.appendChild(sampleLabel);
+          fitSampleLabel(sampleLabelText, sample.name, left - 28);
           var sampleFiltered = filtered.filter(function (loop) { return loop.sampleId === sample.id; });
           var sampleShown = shown.filter(function (loop) { return loop.sampleId === sample.id; });
           svg.appendChild(svgEl("text", { x: 12, y: laneTop + 40, fill: "#718294", "font-size": 10 }, sampleShown.length + (sampleFiltered.length > cap ? "+" : "") + " shown"));
@@ -1273,7 +1501,7 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
           tabindex: 0, role: "button", "data-id": loop.id, "aria-pressed": selected ? "true" : "false",
           "aria-label": loop.sample + " loop " + loop.id + " from " + locus(loop.chr1, loop.start1, loop.end1) + " to " + locus(loop.chr2, loop.start2, loop.end2)
         });
-        path.appendChild(svgEl("title", {}, loop.sample + " · Loop " + loop.id + "\n" + locus(loop.chr1, loop.start1, loop.end1) + "\n" + locus(loop.chr2, loop.start2, loop.end2) + "\n−log10(q): " + fmtScore(loop) + (clipped ? "\nDashed: one anchor is outside the current window" : "")));
+        path.appendChild(svgEl("title", {}, loop.sample + " · Loop " + loop.id + "\n" + locus(loop.chr1, loop.start1, loop.end1) + "\n" + locus(loop.chr2, loop.start2, loop.end2) + "\n" + loopScoreLabel(loop) + ": " + fmtScore(loop) + (clipped ? "\nDashed: one anchor is outside the current window" : "")));
         path.addEventListener("click", function (e) { e.stopPropagation(); selectLoop(loop.id, "plot"); });
         path.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectLoop(loop.id, "plot"); } });
         svg.appendChild(path);
@@ -1866,7 +2094,7 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         '<div class="detail-item"><span>Contact count</span><strong>' + fmtNum(l.count) + '</strong></div>' +
         (l.p !== null ? '<div class="detail-item"><span>Exact final p-value</span><strong>' + fmtProb(l.p) + '</strong></div>' : "") +
         (l.q !== null ? '<div class="detail-item"><span>Exact final q-value</span><strong>' + fmtProb(l.q) + '</strong></div>' : "") +
-        (loopScore(l) !== null ? '<div class="detail-item"><span>−log10(q) score</span><strong>' + fmtScore(l) + '</strong></div>' : "") +
+        (loopScore(l) !== null ? '<div class="detail-item"><span>' + safeText(loopScoreLabel(l)) + '</span><strong>' + fmtScore(l) + '</strong></div>' : "") +
         '</div><div class="detail-actions"><button class="small-btn ghost" id="centerLoopBtn" type="button">Center loop</button><button class="small-btn ghost" id="clearLoopBtn" type="button">Clear selection</button></div>';
       $("centerLoopBtn").addEventListener("click", function () {
         var lo = Math.min(l.start1, l.start2), hi = Math.max(l.end1, l.end2), pad = Math.max(50000, (hi - lo) * .12);
@@ -2374,13 +2602,17 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
 
     function downloadShown() {
       if (!state.shown.length) return;
-      var head = ["loop_id","sample","source_file","chr1","start1","end1","chr2","start2","end2","distance_bp","contact_count","p_value_exact","q_value_exact","neglog10_q_score","score_source","touches_selected_gene"];
+      var head = ["loop_id","sample","source_file","chr1","start1","end1","chr2","start2","end2","distance_bp","contact_count","p_value_exact","q_value_exact","evidence_score","source_score_raw","score_capped","score_label","score_source","touches_selected_gene"];
       var lines = [head.join("\t")].concat(state.shown.map(function (l) {
         var sample = state.samples.find(function (s) { return s.id === l.sampleId; });
-        return [l.id,l.sample,sample ? sample.fileName : "NA",l.chr1,l.start1,l.end1,l.chr2,l.start2,l.end2,Number.isFinite(l.distance) ? l.distance : "NA",l.count === null ? "NA" : l.count,l.p === null ? "NA" : l.p,l.q === null ? "NA" : l.q,loopScore(l) === null ? "NA" : loopScore(l),l.score !== null ? "IGV_column_8" : l.q !== null ? "computed_from_exact_q" : "NA",loopTouchesGene(l) ? 1 : 0].join("\t");
+        var scoreSource = l.q !== null ? "computed_from_exact_q" : l.scoreSource || (l.score !== null ? "input_score" : "NA");
+        var rawScore = l.sourceScore === Infinity ? "Inf" : l.sourceScore !== undefined && l.sourceScore !== null ? l.sourceScore : l.score !== null ? l.score : "NA";
+        var exportedCapped = l.scoreCapped || (l.q !== null && loopScore(l) >= 500);
+        var evidenceScore = loopScore(l) === Infinity ? "Inf" : loopScore(l) === null ? "NA" : loopScore(l);
+        return [l.id,l.sample,sample ? sample.fileName : "NA",l.chr1,l.start1,l.end1,l.chr2,l.start2,l.end2,Number.isFinite(l.distance) ? l.distance : "NA",l.count === null ? "NA" : l.count,l.p === null ? "NA" : l.p,l.q === null ? "NA" : l.q,evidenceScore,rawScore,exportedCapped ? 1 : 0,loopScore(l) === null ? "NA" : loopScoreLabel(l),scoreSource,loopTouchesGene(l) ? 1 : 0].join("\t");
       }));
       var url = URL.createObjectURL(new Blob([lines.join("\n") + "\n"], { type: "text/tab-separated-values" }));
-      var a = document.createElement("a"); a.href = url; a.download = "FitHiChIP_loops_shown.tsv"; a.click();
+      var a = document.createElement("a"); a.href = url; a.download = "HiChIP_loops_shown.tsv"; a.click();
       setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     }
 
@@ -2475,7 +2707,51 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
       });
       test("official IGV BEDPE", function () {
         var p = parseText("chr1\t9\t11\tchr1\t99\t101\t-\t8.5\t.\t.", "x_IGV.bedpe");
-        return p.type === "FitHiChIP IGV export" && p.loops[0].score === 8.5 && p.loops[0].q === null;
+        return p.type === "FitHiChIP IGV export" && p.loops[0].score === 8.5 && p.loops[0].q === null &&
+          p.loops[0].scoreLabel === "−log10(q)" && p.loops[0].scoreSource === "FitHiChIP_IGV_column_8_neglog10_q";
+      });
+      test("Loop Catalog FH long-range reciprocal records", function () {
+        var t = "chr1\t1000000\t1005000\tchr1:1270000-1275000,2.02044\n" +
+          "chr1\t1270000\t1275000\tchr1:1000000-1005000,2.02044";
+        var p = parseText(t, "THP-1.GSE1.Homo_Sapiens.H3K4me3.b1.5000.fithichip_hp.longrange.bed.gz");
+        return p.type === "Loop Catalog FH loops (5 kb)" && p.loops.length === 1 && p.loops[0].start1 === 1000000 &&
+          p.loops[0].start2 === 1270000 && p.loops[0].score === 2.02044 && p.loops[0].scoreLabel === "−log10(Q-Value_Bias)" &&
+          p.notes.length === 1 && /collapsed/.test(p.notes[0]);
+      });
+      test("Loop Catalog FC score metadata", function () {
+        var p = parseText("chr1\t10\t20\tchr1:30-40,7.41929", "sample.10000.fithichip_cp.longrange.bed.gz");
+        return p.type === "Loop Catalog FC loops (10 kb)" && p.loops[0].scoreSource === "Loop_Catalog_FC_neglog10_Q-Value_Bias";
+      });
+      test("Loop Catalog HiCCUPS score metadata", function () {
+        var p = parseText("chr2\t10\t20\tchr2:30-40,9.90813", "sample.25000.hiccups.longrange.bed.gz");
+        return p.type === "Loop Catalog HiCCUPS loops (25 kb)" && p.loops[0].scoreLabel === "−log10(donut FDR)" &&
+          p.loops[0].scoreSource === "Loop_Catalog_HiCCUPS_neglog10_donut_FDR";
+      });
+      test("renamed WashU long-range file uses neutral metadata", function () {
+        var p = parseText("chr3\t10\t20\tchr3:30-40,4.5", "renamed.longrange.bed.gz");
+        return p.type === "WashU long-range interactions" && p.loops[0].scoreLabel === "Long-range interaction score";
+      });
+      test("generic long-range high score is preserved", function () {
+        var l = parseText("chr3\t10\t20\tchr3:30-40,1000", "renamed.longrange.bed.gz").loops[0];
+        return l.score === 1000 && l.sourceScore === 1000 && !l.scoreCapped;
+      });
+      test("evidence filter defaults to all called loops", function () {
+        return $("scoreFilter").getAttribute("value") === "0";
+      });
+      test("long-range duplicate conflict keeps stronger score", function () {
+        var p = parseText("chr1\t10\t20\tchr1:30-40,3\nchr1\t30\t40\tchr1:10-20,5", "x.longrange.bed");
+        return p.loops.length === 1 && p.loops[0].score === 5 && p.warnings.some(function (warning) { return /conflict/.test(warning); });
+      });
+      test("long-range infinite score is capped but preserved", function () {
+        var p = parseText("chr15\t30625000\t30630000\tchr15:32615000-32620000,inf", "x.5000.fithichip_hp.longrange.bed.gz");
+        var l = p.loops[0];
+        return l.score === 500 && l.sourceScore === Infinity && l.scoreCapped && fmtScore(l) === "500 · capped" &&
+          significanceColor(l) === "rgb(255,112,87)";
+      });
+      test("BGZF BC subfield reports complete block size", function () {
+        var bytes = new Uint8Array(28);
+        bytes.set([31,139,8,4,0,0,0,0,0,255,6,0,66,67,2,0,27,0], 0);
+        return bgzfBlockSizeAt(bytes, 0) === 28 && bgzfBlockSizeAt(bytes.subarray(0, 20), 0) === null;
       });
       test("generic BEDPE6", function () {
         var l = parseText("chr2\t10\t20\tchr2\t30\t40", "x.bedpe").loops[0];
@@ -2606,14 +2882,30 @@ var FitHiChIPBBI=(()=>{var CA=Object.defineProperty;var TA=Object.getOwnProperty
         return toggledLoopSelection(null, 7) === 7 && toggledLoopSelection(7, 7) === null && toggledLoopSelection(7, 8) === 8;
       });
       test("sample-name cleanup", function () {
-        return sampleName("FitRT4_1.interactions_FitHiC_Q0.01_MergeNearContacts_IGV.bedpe") === "RT4_1";
+        return sampleName("FitRT4_1.interactions_FitHiC_Q0.01_MergeNearContacts_IGV.bedpe") === "RT4_1" &&
+          sampleName("THP-1-WT-Batch1.GSE149420.Homo_Sapiens.H3K4me3.b1.5000.fithichip_hp.longrange.bed.gz") === "THP-1-WT-Batch1 · H3K4me3 · FH · 5 kb";
+      });
+      test("long sample labels keep both ends with an ellipsis", function () {
+        var full = "MDA-MB-231-sgRNA-Ctrl.H3K27ac.FC.5 kb";
+        var compact = compactSampleLabel(full);
+        return compact.length <= 21 && compact.indexOf("MDA-MB-231-") === 0 && compact.indexOf("…") > 0 && /FC\.5 kb$/.test(compact);
+      });
+      test("rendered sample label fits its plot gutter", function () {
+        var testSvg = svgEl("svg", { width: 180, height: 30 });
+        var label = svgEl("text", { x: 0, y: 18, "font-size": 12, "font-weight": 800 });
+        testSvg.appendChild(label);
+        document.body.appendChild(testSvg);
+        fitSampleLabel(label, "MDA-MB-231-sgRNA-Ctrl.H3K27ac.FC.5 kb", 117);
+        var fits = label.getComputedTextLength() <= 117 && label.textContent.indexOf("…") > 0;
+        testSvg.remove();
+        return fits;
       });
       test("fixed significance colors", function () {
         return significanceColor({ q: null, score: 2 }) === "rgb(37,99,235)" &&
           significanceColor({ q: null, score: 40 }) === "rgb(255,112,87)";
       });
       test("IGV capped score label", function () {
-        return fmtScore({ q: null, score: 500 }).indexOf("capped") >= 0;
+        return fmtScore({ q: null, score: 500, scoreCapped: true }).indexOf("capped") >= 0;
       });
       test("IGV score filter", function () {
         var parsed = parseText("chr1\t9\t11\tchr1\t99\t101\t-\t8.5\t.\t.", "x_IGV.bedpe");
