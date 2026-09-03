@@ -18,3 +18,6 @@ https://dovetail-analysis.readthedocs.io/en/latest/index.html#
 - **Biomni skill folder**
 A zip folder `Biomni_HiCHIP_skill.zip` that can be upload to Biomni for HiChIP analysis.
 
+- **Interactive loop viwer**
+A html file that can load loop and Chip-seq tracks files.
+
